@@ -15,8 +15,8 @@ class WorkListQuerysetViewMixin:
         to those in the current username.
         """
         username = self.request.user.username
-        options.update(
-            {f'{self.worklist_lookup_prefix}assigned': username})
+#         options.update(
+#             {f'{self.worklist_lookup_prefix}assigned': username})
         return options
 
     def get_queryset_filter_options(self, request, *args, **kwargs):

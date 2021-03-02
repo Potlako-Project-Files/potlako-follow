@@ -44,7 +44,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         patient_fu_cls = django_apps.get_model('potlako_subject.patientcallfollowup')
 
         patient_fu_obj = patient_fu_cls.objects.filter(
-                                     subject_visit__subject_identifier=self.object.subject_identifier).order_by('-created')
+                                     subject_visit__subject_identifier=subject_identifier).order_by('-created')
         if patient_fu_obj:
             return patient_fu_obj[0].next_appointment_date
         else:
@@ -93,7 +93,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.create_worklist()
+        self.create_worklist
         context.update(
         )
         return context
