@@ -40,7 +40,7 @@ if settings.APP_NAME == 'potlako_follow':
     class EdcProtocolAppConfig(BaseEdcProtocolAppConfigs):
         protocol = 'BHP0135'
         protocol_name = 'Potlako Follow'
-        protocol_number = '035'
+        protocol_number = '132'
         protocol_title = ''
         study_open_datetime = datetime(
             2016, 4, 1, 0, 0, 0, tzinfo=gettz('UTC'))
