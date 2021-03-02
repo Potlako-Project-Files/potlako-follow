@@ -32,7 +32,7 @@ class AssignParticipantForm(forms.Form):
         widget=forms.Select())
 
     participants = forms.IntegerField(
-        required=True, label='Number of participants')
+        required=True, label='Total participants')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
