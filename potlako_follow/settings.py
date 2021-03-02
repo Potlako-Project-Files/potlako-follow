@@ -135,6 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 DASHBOARD_URL_NAMES = {
     'potlako_follow_listboard_url': 'potlako_follow:potlako_follow_listboard_url',
+    'potlako_navigation_listboard_url': 'potlako_follow:potlako_navigation_listboard_url',
 
 }
 
@@ -142,6 +143,7 @@ DASHBOARD_BASE_TEMPLATES = {
     'listboard_base_template': 'potlako/base.html',
     'dashboard_base_template': 'potlako/base.html',
     'potlako_follow_listboard_template': 'potlako_follow/follow_listboard.html',
+    'potlako_follow_listboard_template': 'potlako_follow/navigation_listboard.html',
     }
 
 

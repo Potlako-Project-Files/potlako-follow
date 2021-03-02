@@ -14,11 +14,21 @@ potlako_follow.append_item(
 potlako_follow.append_item(
     NavbarItem(
         name='worklist',
-        title='Worklist',
-        label='Worklist',
+        title='Appointments Worklist',
+        label='Appointments Worklist',
         fa_icon='fa-user-plus',
         url_name=settings.DASHBOARD_URL_NAMES[
             'potlako_follow_listboard_url'],
+        no_url_namespace=no_url_namespace))
+
+potlako_follow.append_item(
+    NavbarItem(
+        name='navigation_worklist',
+        title='Navigation Plan Worklist',
+        label='Navigation Plan Worklist',
+        fa_icon='fa-user-plus',
+        url_name=settings.DASHBOARD_URL_NAMES[
+            'potlako_navigation_listboard_url'],
         no_url_namespace=no_url_namespace))
 
 site_navbars.register(potlako_follow)

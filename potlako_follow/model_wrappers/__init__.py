@@ -1,1 +1,2 @@
+from .navigation_worklist_model_wrapper import NavigationWorkListModelWrapper
 from .worklist_model_wrapper import WorkListModelWrapper

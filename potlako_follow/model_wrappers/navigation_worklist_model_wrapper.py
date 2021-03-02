@@ -5,13 +5,13 @@ from edc_model_wrapper import ModelWrapper
 from edc_call_manager.models import Call, Log, LogEntry
 
 
-class WorkListModelWrapper(ModelWrapper):
+class NavigationWorkListModelWrapper(ModelWrapper):
 
-    model = 'potlako_follow.worklist'
+    model = 'potlako_follow.navigationworklist'
     querystring_attrs = ['subject_identifier']
     next_url_attrs = ['subject_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
-        'potlako_follow_listboard_url')
+        'potlako_navigation_listboard_url')
 
     @property
     def subject_locator(self):

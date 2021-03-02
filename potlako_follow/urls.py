@@ -22,4 +22,15 @@ potlako_follow_listboard_url_config = UrlConfig(
     identifier_label='subject_identifier',
     identifier_pattern=screening_identifier)
 
+potlako_navigation_listboard_url_config = UrlConfig(
+    url_name='potlako_navigation_listboard_url',
+    view_class=ListboardView,
+    label='potlako_navigation_listboard',
+    identifier_label='subject_identifier',
+    identifier_pattern=screening_identifier)
+
+
+
 urlpatterns += potlako_follow_listboard_url_config.listboard_urls
+urlpatterns += potlako_navigation_listboard_url_config.listboard_urls
+
