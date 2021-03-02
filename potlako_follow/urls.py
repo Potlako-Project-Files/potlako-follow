@@ -2,7 +2,7 @@ from django.urls import path
 
 from edc_dashboard import UrlConfig
 from .admin_site import potlako_follow_admin
-from .views import ListboardView, HomeView
+from .views import ListboardView, HomeView, NavigationListboardView
 
 
 app_name = 'potlako_follow'
@@ -24,7 +24,7 @@ potlako_follow_listboard_url_config = UrlConfig(
 
 potlako_navigation_listboard_url_config = UrlConfig(
     url_name='potlako_navigation_listboard_url',
-    view_class=ListboardView,
+    view_class=NavigationListboardView,
     label='potlako_navigation_listboard',
     identifier_label='subject_identifier',
     identifier_pattern=screening_identifier)

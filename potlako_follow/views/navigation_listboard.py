@@ -21,7 +21,7 @@ from .filters import ListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
-class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
+class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     WorkListQuerysetViewMixin,
                     ListboardView):
