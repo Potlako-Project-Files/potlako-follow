@@ -13,7 +13,7 @@ potlako_follow.append_item(
 
 potlako_follow.append_item(
     NavbarItem(
-        name='worklist',
+        name='appointmet_worklist',
         title='Appointments Worklist',
         label='Appointments Worklist',
         fa_icon='fa-user-plus',

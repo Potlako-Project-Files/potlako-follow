@@ -34,7 +34,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     listboard_view_filters = ListboardViewFilters()
     model_wrapper_cls = WorkListModelWrapper
     navbar_name = 'potlako_follow'
-    navbar_selected_item = 'worklist'
+    navbar_selected_item = 'appointmet_worklist'
     ordering = '-modified'
     paginate_by = 10
     search_form_url = 'potlako_follow_listboard_url'
