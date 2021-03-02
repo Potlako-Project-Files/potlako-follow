@@ -23,8 +23,35 @@
 	    {% include 'potlako_follow/forms/assign_participants.html' %}
 	    {% include 'potlako_follow/forms/reset_assignment_form.html' %}
      </div>
-     {% include 'flourish_follow/admin_stats.html' %}
-     
+     {% include 'potlako_follow/admin_stats.html' %}
+     {% if participants_assignments %}
+			<div class="panel panel-default">
+			    <div class="panel-heading"><h4>Participants assignments</h4>
+			    </div>
+			    <table id="item-identifiers" class="table table-striped table-bordered" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+			                <th>Username</th>
+							<th>Participants</th>
+			            </tr>
+			        </thead>
+			        <tfoot>
+			            <tr>
+			                <th>Username</th>
+							<th>Participants</th>
+			            </tr>
+			        </tfoot>
+			        <tbody>
+			        {% for assignments in participants_assignments %}
+				      	<tr>
+				      		<td>{{ assignments.0 }}</td>
+				      		<td>{{ assignments.1 }}</td>
+				      	</tr>
+					{% endfor %}
+			        </tbody>
+			    </table>
+	    	</div>
+    	{% endif %}
     </div>    
 </div>
 {% endblock main %}

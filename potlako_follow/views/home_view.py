@@ -36,7 +36,7 @@ class HomeView(
         """
         assignments = WorkList.objects.filter(
             date_assigned=timezone.now().date()).values_list(
-                'assigned', 'study_maternal_identifier',)
+                'assigned', 'subject_identifier',)
         return assignments
 
     def reset_participant_assignments(self, username=None):
