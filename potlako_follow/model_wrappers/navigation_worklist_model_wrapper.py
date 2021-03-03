@@ -101,9 +101,7 @@ class NavigationWorkListModelWrapper(ModelWrapper):
     def log_entry(self):
         log = Log.objects.get(id=self.call_log)
         logentry = LogEntry(
-            log=log,
-            prev_study=self.prev_protocol,
-            study_maternal_identifier=self.study_maternal_identifier)
+            log=log)
         return LogEntryModelWrapper(logentry)
 
     @property
