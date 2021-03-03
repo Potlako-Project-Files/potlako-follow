@@ -15,7 +15,7 @@ from edc_navbar import NavbarViewMixin
 from potlako_subject.models import BaselineClinicalSummary, NavigationSummaryAndPlan
 
 
-from ..model_wrappers import WorkListModelWrapper
+from ..model_wrappers import NavigationWorkListModelWrapper
 from ..models import NavigationWorkList
 from .filters import ListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
@@ -33,7 +33,7 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
     model = 'potlako_follow.navigationworklist'
     listboard_view_filters = ListboardViewFilters()
-    model_wrapper_cls = WorkListModelWrapper
+    model_wrapper_cls = NavigationWorkListModelWrapper
     navbar_name = 'potlako_follow'
     navbar_selected_item = 'navigation_worklist'
     ordering = '-modified'
