@@ -3,7 +3,7 @@ from edc_call_manager.decorators import register
 
 from potlako_subject.models import SubjectLocator
 
-from edc_call_manager.models import Call, Log, LogEntry
+from ..models import Call, Log, LogEntry
 from ..models import NavigationWorkList, WorkList
 
 

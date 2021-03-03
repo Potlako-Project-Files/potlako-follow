@@ -2,7 +2,19 @@ from django.apps import apps as django_apps
 from django.conf import settings
 
 from edc_model_wrapper import ModelWrapper
-from edc_call_manager.models import Call, Log, LogEntry
+from ..models import Call, Log, LogEntry
+
+
+class LogEntryModelWrapper(ModelWrapper):
+
+    model = 'potlako_follow.logentry'
+    querystring_attrs = ['log']
+    next_url_attrs = ['log']
+    next_url_name = settings.DASHBOARD_URL_NAMES.get('potlako_navigation_listboard_url')
+
+    @property
+    def log(self):
+        return self.object.log
 
 
 class NavigationWorkListModelWrapper(ModelWrapper):
@@ -44,17 +56,17 @@ class NavigationWorkListModelWrapper(ModelWrapper):
         call_log = Log.objects.get(call=call)
         return str(call_log.id)
 
-#     @property
-#     def log_entries(self):
-#         wrapped_entries = []
-#         call = Call.objects.filter(
-#             subject_identifier=self.object.subject_identifier).order_by('scheduled').last()
-#         log_entries = LogEntry.objects.filter(
-#             log__call__subject_identifier=call.subject_identifier).order_by('call_datetime')[:3]
-#         for log_entry in log_entries:
-#             wrapped_entries.append(
-#                 LogEntryModelWrapper(log_entry))
-#         return wrapped_entries
+    @property
+    def log_entries(self):
+        wrapped_entries = []
+        call = Call.objects.filter(
+            subject_identifier=self.object.subject_identifier).order_by('scheduled').last()
+        log_entries = LogEntry.objects.filter(
+            log__call__subject_identifier=call.subject_identifier).order_by('call_datetime')[:3]
+        for log_entry in log_entries:
+            wrapped_entries.append(
+                LogEntryModelWrapper(log_entry))
+        return wrapped_entries
 
 
     @property
@@ -68,9 +80,7 @@ class NavigationWorkListModelWrapper(ModelWrapper):
             'subject_phone_alt',
             'subject_work_phone',
             'indirect_contact_cell',
-            'indirect_contact_phone',
-            'caretaker_cell',
-            'caretaker_tel']
+            'indirect_contact_phone']
         if self.subject_locator:
             phone_choices = ()
             for field_attr in field_attrs:
@@ -87,14 +97,14 @@ class NavigationWorkListModelWrapper(ModelWrapper):
             return True
         return False
 
-#     @property
-#     def log_entry(self):
-#         log = Log.objects.get(id=self.call_log)
-#         logentry = LogEntry(
-#             log=log,
-#             prev_study=self.prev_protocol,
-#             study_maternal_identifier=self.study_maternal_identifier)
-#         return LogEntryModelWrapper(logentry)
+    @property
+    def log_entry(self):
+        log = Log.objects.get(id=self.call_log)
+        logentry = LogEntry(
+            log=log,
+            prev_study=self.prev_protocol,
+            study_maternal_identifier=self.study_maternal_identifier)
+        return LogEntryModelWrapper(logentry)
 
     @property
     def subject_consent(self):
