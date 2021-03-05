@@ -63,6 +63,8 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
                     except NavigationWorkList.DoesNotExist:
                         NavigationWorkList.objects.create(
                             subject_identifier=subject_identifier)
+                else:
+                    NavigationWorkList.objects.filter(subject_identifier=subject_identifier).delete()
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_navigation_listboard_url')
