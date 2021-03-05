@@ -1,4 +1,6 @@
-
+{% load admin_urls %}
+{% load edc_base_extras %}
+{% load potlako_dashboard_extras %}
 <!-- begin results body -->
 
 {% for result in results %}
@@ -15,27 +17,12 @@
 	    {{ result.subject_identifier }}
 		</td>
 	    <td>
-	    	{% if result.call_log_required %}
-				{% include 'potlako_follow/listboard/results_body/add_call_log_entry.html' %}
-	    	{% endif %}
+	    	{% dashboard_button result %}
+	    	{%  if result.community_arm == 'Intervention' %}
+				{% baseline_clinical_summary_button result groups%}
+				{% navigation_plan_summary_button result  groups%}
+      		{% endif %}
 	    </td>
-	    <td>{{ result.assigned }}</td>
-	    <td>{% if result.call_datetime %} {{ result.call_datetime }} {% endif %}</td>
-	    <td>
-		    {% if result.is_called %}
-		      <span class="text text-success"><i class="fa fa-check-circle fa-lg" title="Called"></i></span>
-		    {% else %}
-		      <span class="text text-danger"><i class="fa fa-times-circle fa-lg" title="Not called"></i></span>
-		    {% endif %}
-	    </td>
-	    <td>
-		    {% if result.visited %}
-		      <span class="text text-success"><i class="fa fa-check-circle fa-lg" title="Visited"></i></span>
-		    {% else %}
-		      <span class="text text-danger"><i class="fa fa-times-circle fa-lg" title="Not visited"></i></span>
-		    {% endif %}
-	    </td>  
-	    <td>{{ result.contacts }}</td>  
 	<!--  end columns  -->
 
     </tr>                     
