@@ -64,11 +64,6 @@ class WorkList(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
         fields = ['subject_identifier']
         return fields
 
-    def save(self, *args, **kwargs):
-        if not self.subject_identifier:
-            self.subject_identifier = self.study_maternal_identifier
-        super().save(*args, **kwargs)
-
     class Meta:
         app_label = 'potlako_follow'
         verbose_name = 'Worklist'

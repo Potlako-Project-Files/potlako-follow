@@ -1,4 +1,5 @@
-
+{% load edc_base_extras %}
+{% load potlako_dashboard_extras %}
 <!-- begin results body -->
 
 {% for result in results %}
@@ -18,8 +19,9 @@
 	    	{% if result.call_log_required %}
 				{% include 'potlako_follow/listboard/results_body/add_call_log_entry.html' %}
 	    	{% endif %}
+	    	{% dashboard_button result %}
 	    </td>
-	    <td>{{ result.assigned }}</td>
+	    <td>{{ result.specilist_appointment_date }}</td>
 	    <td>{% if result.call_datetime %} {{ result.call_datetime }} {% endif %}</td>
 	    <td>
 		    {% if result.is_called %}

@@ -11,7 +11,7 @@ def cal_log_entry_on_post_save(sender, instance, using, raw, **kwargs):
     if not raw:
         try:
             work_list = WorkList.objects.get(
-                study_maternal_identifier=instance.study_maternal_identifier)
+                subject_identifier=instance.subject_identifier)
         except WorkList.DoesNotExist:
             pass
         else:
