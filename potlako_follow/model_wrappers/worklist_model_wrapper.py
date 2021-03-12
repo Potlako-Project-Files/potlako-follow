@@ -44,6 +44,31 @@ class WorkListModelWrapper(ModelWrapper):
         return None
 
     @property
+    def cancer_propability_suspicion(self):
+        baseline_clinical_cls = django_apps.get_model('potlako_subject.baselineclinicalsummary')
+        clinician_enrollment_cls = django_apps.get_model('potlako_subject.cliniciancallenrollment')
+
+        try:
+            baseline_obj = baseline_clinical_cls.objects.get(
+                                    subject_identifier=self.object.subject_identifier)
+        except baseline_clinical_cls.DoesNotExist:
+            try:
+                clinician_enrollment_obj = clinician_enrollment_cls.objects.get(
+                                                    subject_identifier=self.object.subject_identifier)
+            except clinician_enrollment_cls.DoesNotExist:
+                return None
+            else:
+                suspected_cancers = (clinician_enrollment_obj.suspected_cancer + ", " +
+                                    clinician_enrollment_obj.suspected_cancer_unsure + ", " +
+                                    clinician_enrollment_obj.suspected_cancer_other)
+                return (suspected_cancers, clinician_enrollment_obj.suspicion_level)
+        else:
+            suspected_cancer = baseline_obj.cancer_concern or baseline_obj.cancer_concern_other
+            return (suspected_cancer, baseline_obj.cancer_probability)
+
+
+
+    @property
     def subject_locator(self):
         SubjectLocator = django_apps.get_model(
             'potlako_subject.subjectlocator')
@@ -114,7 +139,7 @@ class WorkListModelWrapper(ModelWrapper):
         if self.locator_phone_numbers:
             return True
         return False
- 
+
     @property
     def log_entry(self):
         log = Log.objects.get(id=self.call_log)
