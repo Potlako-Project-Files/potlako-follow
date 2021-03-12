@@ -32,7 +32,10 @@ class WorkListFollowUpModelCaller(ModelCaller):
             if call.call_status == CLOSED:
                 raise ValidationError(
                     'Call is closed. Perhaps catch this in the form.')
-            call.call_outcome = '. '.join(log_entry.outcome)
+            if log_entry.outcome:
+                call.call_outcome = '. '.join(log_entry.outcome)
+            else:
+                call.call_outcome = None
             call.call_datetime = log_entry.call_datetime
             call.call_attempts = log_entries.count()
             if log_entry.patient_reached == YES:

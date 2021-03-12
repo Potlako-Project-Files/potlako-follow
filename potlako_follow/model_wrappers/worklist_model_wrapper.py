@@ -1,5 +1,6 @@
 from django.apps import apps as django_apps
 from django.conf import settings
+from edc_base.utils import get_utcnow
 from edc_constants.constants import YES
 from edc_model_wrapper import ModelWrapper
 from ..models import Call, Log, LogEntry
@@ -115,11 +116,10 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def patient_reached(self):
-        return LogEntry.objects.filter(
+        reached_entries = LogEntry.objects.filter(
             log__call__subject_identifier=self.object.subject_identifier,
             patient_reached=YES)
-
-
+        return reached_entries[0].patient_reached if reached_entries else None
 
     @property
     def locator_phone_numbers(self):
@@ -142,12 +142,17 @@ class WorkListModelWrapper(ModelWrapper):
             return phone_choices
 
     @property
-    def call_log_required(self):
+    def call_log_entry_obj(self):
         """Return True if the call log is required.
         """
-        if self.locator_phone_numbers:
-            return True
-        return False
+        try:
+            log_obj = LogEntry.objects.get(
+            call_datetime__date=get_utcnow().date(),
+            log__call__subject_identifier=self.subject_consent.subject_identifier,)
+        except LogEntry.DoesNotExist:
+            return None
+        else:
+            return LogEntryModelWrapper(log_obj)
 
     @property
     def log_entry(self):

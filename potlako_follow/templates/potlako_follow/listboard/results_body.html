@@ -16,10 +16,8 @@
 	    {{ result.subject_identifier }}
 		</td>
 	    <td>
-	    	{% if result.call_log_required %}
-				{% include 'potlako_follow/listboard/results_body/add_call_log_entry.html' %}
-	    	{% endif %}
-	    	{% if result.patient_reached %}
+			{% include 'potlako_follow/listboard/results_body/add_call_log_entry.html' %}
+	    	{% if result.patient_reached == 'Yes' %}
 	    	{% dashboard_button result %}
 	    	{% endif %}
 	    </td>
