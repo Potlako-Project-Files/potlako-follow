@@ -9,12 +9,13 @@ class LogEntryModelWrapper(ModelWrapper):
 
     model = 'potlako_follow.logentry'
     querystring_attrs = ['log']
-    next_url_attrs = ['log']
+    next_url_attrs = ['log', 'subject_identifier']
     next_url_name = settings.DASHBOARD_URL_NAMES.get('potlako_follow_listboard_url')
 
     @property
     def log(self):
         return self.object.log
+
 
 class WorkListModelWrapper(ModelWrapper):
 
@@ -118,7 +119,6 @@ class WorkListModelWrapper(ModelWrapper):
                 LogEntryModelWrapper(log_entry))
         return wrapped_entries
 
-
     @property
     def locator_phone_numbers(self):
         """Return all contact numbers on the locator.
@@ -151,7 +151,8 @@ class WorkListModelWrapper(ModelWrapper):
     def log_entry(self):
         log = Log.objects.get(id=self.call_log)
         logentry = LogEntry(
-            log=log)
+            log=log,
+            subject_identifier=self.object.subject_identifier)
         return LogEntryModelWrapper(logentry)
 
     @property
