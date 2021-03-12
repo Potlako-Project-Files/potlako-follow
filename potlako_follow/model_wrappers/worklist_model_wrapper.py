@@ -56,7 +56,7 @@ class WorkListModelWrapper(ModelWrapper):
                 clinician_enrollment_obj = clinician_enrollment_cls.objects.get(
                                                     subject_identifier=self.object.subject_identifier)
             except clinician_enrollment_cls.DoesNotExist:
-                return None
+                return ('', '')
             else:
                 suspected_cancers = (clinician_enrollment_obj.suspected_cancer + ", " +
                                     clinician_enrollment_obj.suspected_cancer_unsure + ", " +
