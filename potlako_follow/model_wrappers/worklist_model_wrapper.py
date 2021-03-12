@@ -177,13 +177,15 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def contacts(self):
-        if self.subject_locator:
-            return ', '.join([
-                self.subject_locator.subject_cell or '',
-                self.subject_locator.subject_cell_alt or '',
-                self.subject_locator.subject_phone or '',
-                self.subject_locator.subject_phone_alt or ''])
-        return None
+        contacts = []
+        num_list = ['subject_cell', 'subject_cell_alt', 'subject_phone', 'subject_phone_alt']
+        for contact in num_list:
+            attr = getattr(self.subject_locator, contact, '')
+            if attr:
+                contacts.append(attr)
+            else:
+                continue
+        return ', '.join(contacts)
 
     @property
     def survey_schedule(self):
