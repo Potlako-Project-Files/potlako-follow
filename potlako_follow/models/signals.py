@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from ..models.worklist import WorkList
-from edc_call_manager.models import LogEntry
+from ..models.call_models import LogEntry
 
 
 @receiver(post_save, weak=False, sender=LogEntry,
