@@ -1,6 +1,6 @@
 from django.apps import apps as django_apps
 from django.conf import settings
-
+from edc_constants.constants import YES
 from edc_model_wrapper import ModelWrapper
 from ..models import Call, Log, LogEntry
 
@@ -112,6 +112,14 @@ class WorkListModelWrapper(ModelWrapper):
             wrapped_entries.append(
                 LogEntryModelWrapper(log_entry))
         return wrapped_entries
+
+    @property
+    def patient_reached(self):
+        return LogEntry.objects.filter(
+            log__call__subject_identifier=self.object.subject_identifier,
+            patient_reached=YES)
+
+
 
     @property
     def locator_phone_numbers(self):

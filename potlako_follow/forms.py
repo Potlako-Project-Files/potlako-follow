@@ -7,7 +7,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 
 from edc_base.sites import SiteModelFormMixin
-from edc_constants.constants import YES, CLOSED
+from edc_constants.constants import YES, CLOSED, NO
 from edc_form_validators import FormValidator
 from edc_form_validators import FormValidatorMixin
 
@@ -20,28 +20,18 @@ class LogEntryFormValidator(FormValidator):
         cleaned_data = self.cleaned_data
         log = cleaned_data.get('log')
 
-        self.validate_other_specify(
-            field='appt_location',
-            required_msg=('You wrote the appointment location is OTHER, please'
-                          ' specify below.'))
-
-        fields_required = {
-            'appt_date':
-            ('You wrote the participant is willing to make an appointment. '
-             'Please specify the appointment date.'),
-            'appt_grading':
-            ('You wrote the participant is willing to make an appointment. '
-             'Please specify if this is a firm appointment date or not.'),
-            'appt_location':
-            ('You wrote the participant is willing to make an appointment. '
-             'Please specify the appointment location.'), }
-
-        for field_required, message in fields_required.items():
-            self.required_if(
-                YES,
-                field='appt',
-                field_required=field_required,
-                required_msg=message)
+        if cleaned_data.get('patient_reached') == YES and not cleaned_data.get('call_outcome'):
+            message = {
+                'call_outcome':
+                'This field is required'}
+            self._errors.update(message)
+            raise ValidationError(message)
+        elif cleaned_data.get('patient_reached') == NO and cleaned_data.get('call_outcome'):
+            message = {
+                'call_outcome':
+                'This field is not required'}
+            self._errors.update(message)
+            raise ValidationError(message)
 
         if log.call.call_status == CLOSED:
             message = {
@@ -50,18 +40,9 @@ class LogEntryFormValidator(FormValidator):
             self._errors.update(message)
             raise ValidationError(message)
 
-
 class LogEntryForm(FormValidatorMixin, forms.ModelForm):
 
     form_validator_cls = LogEntryFormValidator
-
-    phone_num_type = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        label='Which phone number(s) was used for contact?')
-
-    phone_num_success = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        label='Which number(s) were you successful in reaching?')
 
     subject_identifier = forms.CharField(
         label='Subject Identifier',
@@ -71,12 +52,6 @@ class LogEntryForm(FormValidatorMixin, forms.ModelForm):
     class Meta:
         model = LogEntry
         fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        choices = self.custom_choices
-        self.fields['phone_num_type'].choices = choices
-        self.fields['phone_num_success'].choices = choices + (('none_of_the_above', 'None of the above'),)
 
 
 class WorkListForm(SiteModelFormMixin, forms.ModelForm):

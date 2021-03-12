@@ -19,7 +19,9 @@
 	    	{% if result.call_log_required %}
 				{% include 'potlako_follow/listboard/results_body/add_call_log_entry.html' %}
 	    	{% endif %}
+	    	{% if result.patient_reached %}
 	    	{% dashboard_button result %}
+	    	{% endif %}
 	    </td>
 	    <td> {{ result.cancer_propability_suspicion.0 }}</td>
 	    <td> {{ result.cancer_propability_suspicion.1}}</td>

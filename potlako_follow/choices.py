@@ -24,6 +24,10 @@ APPT_REASONS_UNWILLING = (
     (OTHER, 'Other reason ...'),
 )
 
+CALL_OUTCOME = (
+    ('missed_visit', 'Patient missed the visit'),
+    ('successful_visit', 'Patient managed to go for their visit'))
+
 CONTACT_FAIL_REASON = (
     ('no_response', 'Phone rang, no response but voicemail left'),
     ('no_response_vm_not_left', 'Phone rang no response and no option to leave voicemail'),
@@ -73,7 +77,7 @@ PHONE_SUCCESS = (
     ('subject_work_phone', 'subject_work_phone'),
     ('indirect_contact_cell', 'indirect_contact_cell'),
     ('indirect_contact_phone', 'indirect_contact_phone'),
-    ('caretaker_cell',  'caretaker_cell'),
+    ('caretaker_cell', 'caretaker_cell'),
     ('caretaker_tel', 'caretaker_tel'),
     ('none_of_the_above', 'None of the above'),
 )
@@ -87,6 +91,6 @@ PHONE_USED = (
     ('subject_work_phone', 'subject_work_phone'),
     ('indirect_contact_cell', 'indirect_contact_cell'),
     ('indirect_contact_phone', 'indirect_contact_phone'),
-    ('caretaker_cell',  'caretaker_cell'),
+    ('caretaker_cell', 'caretaker_cell'),
     ('caretaker_tel', 'caretaker_tel'),
 )
