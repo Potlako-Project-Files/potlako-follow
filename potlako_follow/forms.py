@@ -63,6 +63,11 @@ class LogEntryForm(FormValidatorMixin, forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         label='Which number(s) were you successful in reaching?')
 
+    subject_identifier = forms.CharField(
+        label='Subject Identifier',
+        widget=forms.TextInput(attrs={'readonly': 'readonly'}),
+        required=False)
+
     class Meta:
         model = LogEntry
         fields = '__all__'

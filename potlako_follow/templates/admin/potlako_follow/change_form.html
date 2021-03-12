@@ -1,0 +1,80 @@
+{% extends 'edc_model_admin/admin/change_form.html' %}
+{% load static %}
+
+{% block extrahead %}
+	{{ block.super }}
+  	<script type="text/javascript" charset="utf8" src="{% static 'potlako_subject/js/patient_summary.js' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+	{{ block.super }}
+  	<link rel="stylesheet" type="text/css" href="{% static 'potlako_subject/css/fontawesome.min.css' %}" >
+  	<link rel="stylesheet" type="text/css" href="{% static 'potlako_subject/css/patient_summary.css' %}">
+{% endblock %}
+
+{% block field_sets %}
+
+{% if cliniciancallenrollment %}
+<div class="summary">
+<div class="tab">
+  <button class="tablinks"  onmouseover="openCity(event, 'cliniciancallenrollment')" >Demographics</button>
+  
+{% if navigationsummaryandplan %}
+  <button class="tablinks"  onmouseover="openCity(event, 'navigationsummaryandplan')">Diagnostic Plan</button>
+ {% endif %}
+</div>
+
+
+<div id="cliniciancallenrollment" class="tabcontent">
+<div class='patient_details'>
+<label class='heading'>Age: </label> {{ cliniciancallenrollment.age_in_years }}  <br>
+<label class='heading'>Gender: </label> {{ cliniciancallenrollment.get_gender_display }} <br>
+<label class='heading'>HIV Result: </label> {{ cliniciancallenrollment.last_hiv_result }} <br>
+<label class='heading'>Suspected Cancer: </label> {{ cliniciancallenrollment.get_suspected_cancer_display }}<br>
+<label class='heading'>Suspicion Level: </label> {{ cliniciancallenrollment.get_suspicion_level_display }} </div>
+</div>
+
+<div id="navigationsummaryandplan" class="tabcontent">
+<div style="padding:10px; line-height:2em">
+	<label class='heading'>Diagnostic plan: </label> {{ navigationsummaryandplan.diagnostic_plan }} <br />
+	<label class='heading'>Diagnosis date: </label> {{ navigationsummaryandplan.diagnosis_date }}
+	{% if navigationsummaryandplan.evaluationtimeline_set.all %}
+		<br />
+		<table class="table table-striped">
+		  <thead>
+		    <tr>
+		      <th scope="col">Key Step</th>
+		      <th scope="col">Target Date</th>
+		      <th scope="col">Adjusted Date</th>
+		      <th scope="col">Status</th>
+		      <th scope="col">Completion Date</th>
+		      <th scope="col">Review required</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+			  {% for item in navigationsummaryandplan.evaluationtimeline_set.all %}
+			    <tr>
+			      <td>{{item.key_step}}</td>
+			      <td>{{item.target_date}}</td>
+			      <td>{{item.adjusted_target_date}}</td>
+			      <td>{{item.key_step_status}}</td>
+			      <td>{{item.completion_date}}</td>
+			      <td>{{item.review_required}}</td>
+			    </tr>
+			  {% endfor %}
+		  </tbody>
+		  </table>
+	{% endif %}
+</div>
+</div>
+</div>
+<div class='clearfix'></div>
+{% endif %}
+  {{ block.super }}
+
+{% endblock field_sets %}
+
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+{% endblock %}

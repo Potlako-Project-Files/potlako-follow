@@ -15,6 +15,7 @@ from edc_model_admin import (
     ModelAdminRedirectOnDeleteMixin)
 from edc_model_admin import audit_fieldset_tuple
 from edc_call_manager.admin import ModelAdminCallMixin
+from potlako_subject.models.model_mixins import BaselineRoadMapMixin
 
 from .admin_site import potlako_follow_admin
 from .forms import LogEntryForm, NavigationWorkListForm, WorkListForm
@@ -33,6 +34,28 @@ class ModelAdminMixin(ModelAdminNextUrlRedirectMixin,
     date_hierarchy = 'modified'
     empty_value_display = '-'
 
+    def add_view(self, request, form_url='', extra_context=None):
+
+        extra_context = extra_context or {}
+        if self.extra_context_models:
+            extra_context_dict = BaselineRoadMapMixin(
+                subject_identifier=request.GET.get(
+                    'subject_identifier')).baseline_dict
+            [extra_context.update({key: extra_context_dict.get(key)})for key in self.extra_context_models]
+        return super().add_view(
+            request, form_url=form_url, extra_context=extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+
+        extra_context = extra_context or {}
+        if self.extra_context_models:
+            extra_context_dict = BaselineRoadMapMixin(
+                subject_identifier=request.GET.get(
+                    'subject_identifier')).baseline_dict
+            [extra_context.update({key: extra_context_dict.get(key)})for key in self.extra_context_models]
+        return super().change_view(
+            request, object_id, form_url=form_url, extra_context=extra_context)
+
 
 @admin.register(Call, site=potlako_follow_admin)
 class CallAdmin(ModelAdminMixin, ModelAdminCallMixin, admin.ModelAdmin):
@@ -48,6 +71,11 @@ class LogAdmin(ModelAdminMixin, admin.ModelAdmin):
 class LogEntryAdmin(ModelAdminMixin, admin.ModelAdmin):
 
     form = LogEntryForm
+    instructions = None
+
+    extra_context_models = [
+        'cliniciancallenrollment',
+        'navigationsummaryandplan', ]
 
     search_fields = ['subject_identifier']
 
@@ -149,7 +177,7 @@ class LogEntryAdmin(ModelAdminMixin, admin.ModelAdmin):
             'subject_phone_alt',
             'subject_work_phone',
             'indirect_contact_cell',
-            'indirect_contact_phone',]
+            'indirect_contact_phone', ]
 
         try:
             locator_obj = subject_locator_cls.objects.get(
@@ -203,7 +231,6 @@ class LogEntryAdmin(ModelAdminMixin, admin.ModelAdmin):
             if field not in fields:
                 fields.append(field)
         return fields
-
 
     def render_change_form(self, request, context, *args, **kwargs):
         context['adminform'].form.fields['log'].queryset = \

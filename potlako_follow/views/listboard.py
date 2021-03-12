@@ -95,5 +95,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         context = super().get_context_data(**kwargs)
         self.create_worklist
         context.update(
-        )
+            total_results=self.get_queryset().count(),
+            called_subject=WorkList.objects.filter(is_called=True).count(),
+            visited_subjects=WorkList.objects.filter(visited=True).count())
         return context
