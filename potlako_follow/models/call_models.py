@@ -7,7 +7,7 @@ from edc_base.model_fields import OtherCharField
 from edc_base.model_validators import date_is_future, datetime_not_future
 from edc_base.utils import get_utcnow
 from edc_constants.choices import YES_NO_NA
-from edc_constants.constants import YES, NOT_APPLICABLE
+from edc_constants.constants import YES, NOT_APPLICABLE, NO
 
 from edc_call_manager.model_mixins import (
     CallModelMixin, LogModelMixin, LogEntryModelMixin)
@@ -174,6 +174,15 @@ class LogEntry(BaseUuidModel):
         max_length=50,
         null=True,
         blank=True)
+
+    @property
+    def outcome(self):
+        outcome = []
+        if self.appt_date:
+            outcome.append('Appt. scheduled')
+        elif self.may_call == NO:
+            outcome.append('Do not call')
+        return outcome
 
     class Meta(LogEntryModelMixin.Meta):
         app_label = 'potlako_follow'
