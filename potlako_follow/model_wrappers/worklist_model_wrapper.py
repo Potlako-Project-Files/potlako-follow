@@ -43,7 +43,6 @@ class WorkListModelWrapper(ModelWrapper):
                 return patient_call_obj.next_appointment_date
         return None
 
-    @property
     def cancer_propability_suspicion(self):
         baseline_clinical_cls = django_apps.get_model('potlako_subject.baselineclinicalsummary')
         clinician_enrollment_cls = django_apps.get_model('potlako_subject.cliniciancallenrollment')
@@ -65,6 +64,14 @@ class WorkListModelWrapper(ModelWrapper):
         else:
             suspected_cancer = baseline_obj.cancer_concern or baseline_obj.cancer_concern_other
             return (suspected_cancer, baseline_obj.cancer_probability)
+
+    @property
+    def suspected_cancer(self):
+        return self.cancer_propability_suspicion()[0]
+
+    @property
+    def cancer_probability(self):
+        return self.cancer_propability_suspicion()[1]
 
 
 

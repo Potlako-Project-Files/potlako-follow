@@ -21,8 +21,8 @@
 	    	{% endif %}
 	    	{% dashboard_button result %}
 	    </td>
-	    <td> {{ result.cancer_propability_suspicion.0 }}</td>
-	    <td> {{ result.cancer_propability_suspicion.1 }}</td>
+	    <td> {{ result.suspected_cancer }}</td>
+	    <td> {{ result.cancer_probability}}</td>
 	    <td>{{ result.specilist_appointment_date }}</td>
 	    <td>{% if result.call_datetime %} {{ result.call_datetime }} {% endif %}</td>
 	    <td>
