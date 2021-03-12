@@ -44,6 +44,7 @@ class WorkListModelWrapper(ModelWrapper):
                 return patient_call_obj.next_appointment_date
         return None
 
+    @property
     def cancer_propability_suspicion(self):
         baseline_clinical_cls = django_apps.get_model('potlako_subject.baselineclinicalsummary')
         clinician_enrollment_cls = django_apps.get_model('potlako_subject.cliniciancallenrollment')
@@ -56,25 +57,18 @@ class WorkListModelWrapper(ModelWrapper):
                 clinician_enrollment_obj = clinician_enrollment_cls.objects.get(
                                                     subject_identifier=self.object.subject_identifier)
             except clinician_enrollment_cls.DoesNotExist:
-                return ('', '')
+                return None
             else:
-                suspected_cancers = (clinician_enrollment_obj.suspected_cancer + ", " +
-                                    clinician_enrollment_obj.suspected_cancer_unsure + ", " +
-                                    clinician_enrollment_obj.suspected_cancer_other)
+                suspected_cancers = clinician_enrollment_obj.suspected_cancer
+                if clinician_enrollment_obj.suspected_cancer_unsure:
+                    suspected_cancers += ", " + clinician_enrollment_obj.suspected_cancer_unsure
+                if clinician_enrollment_obj.suspected_cancer_other:
+                    suspected_cancers += ", " + clinician_enrollment_obj.suspected_cancer_unsure
+
                 return (suspected_cancers, clinician_enrollment_obj.suspicion_level)
         else:
             suspected_cancer = baseline_obj.cancer_concern or baseline_obj.cancer_concern_other
             return (suspected_cancer, baseline_obj.cancer_probability)
-
-    @property
-    def suspected_cancer(self):
-        return self.cancer_propability_suspicion()[0]
-
-    @property
-    def cancer_probability(self):
-        return self.cancer_propability_suspicion()[1]
-
-
 
     @property
     def subject_locator(self):
