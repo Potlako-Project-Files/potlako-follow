@@ -7,13 +7,13 @@ from django.urls.base import reverse
 from django.utils.decorators import method_decorator
 
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_constants.constants import NO
 from edc_dashboard.view_mixins import (
     ListboardFilterViewMixin, SearchFormViewMixin)
 from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
 
 from potlako_subject.models import BaselineClinicalSummary, NavigationSummaryAndPlan
-
 
 from ..model_wrappers import NavigationWorkListModelWrapper
 from ..models import NavigationWorkList
@@ -22,9 +22,9 @@ from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
 class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
-                    ListboardFilterViewMixin, SearchFormViewMixin,
-                    WorkListQuerysetViewMixin,
-                    ListboardView):
+                              ListboardFilterViewMixin, SearchFormViewMixin,
+                              WorkListQuerysetViewMixin,
+                              ListboardView):
 
     listboard_template = 'potlako_navigation_listboard_template'
     listboard_url = 'potlako_navigation_listboard_url'
@@ -43,11 +43,13 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
     @property
     def create_worklist(self):
         subject_visit_cls = django_apps.get_model('potlako_subject.subjectvisit')
-        subject_identifiers = subject_visit_cls.objects.values_list('subject_identifier', flat=True).filter(visit_code=1000)
+        subject_identifiers = subject_visit_cls.objects.values_list(
+            'subject_identifier', flat=True).filter(visit_code=1000)
         subject_identifiers = list(set(subject_identifiers))
         for subject_identifier in subject_identifiers:
             try:
-                BaselineClinicalSummary.objects.get(subject_identifier=subject_identifier)
+                BaselineClinicalSummary.objects.get(subject_identifier=subject_identifier,
+                                                    team_discussion=NO)
             except BaselineClinicalSummary.DoesNotExist:
                 try:
                     NavigationWorkList.objects.get(subject_identifier=subject_identifier)
@@ -55,16 +57,23 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
                     NavigationWorkList.objects.create(
                         subject_identifier=subject_identifier)
             else:
-                try:
-                    NavigationSummaryAndPlan.objects.get(subject_identifier=subject_identifier)
-                except NavigationSummaryAndPlan.DoesNotExist:
+                if self.get_community_arm(subject_identifier) == 'Intervention':
                     try:
-                        NavigationWorkList.objects.get(subject_identifier=subject_identifier)
-                    except NavigationWorkList.DoesNotExist:
-                        NavigationWorkList.objects.create(
+                        NavigationSummaryAndPlan.objects.get(
                             subject_identifier=subject_identifier)
+                    except NavigationSummaryAndPlan.DoesNotExist:
+                        try:
+                            NavigationWorkList.objects.get(
+                                subject_identifier=subject_identifier)
+                        except NavigationWorkList.DoesNotExist:
+                            NavigationWorkList.objects.create(
+                                subject_identifier=subject_identifier)
+                    else:
+                        NavigationWorkList.objects.filter(
+                            subject_identifier=subject_identifier).delete()
                 else:
-                    NavigationWorkList.objects.filter(subject_identifier=subject_identifier).delete()
+                    NavigationWorkList.objects.filter(
+                            subject_identifier=subject_identifier).delete()
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_navigation_listboard_url')
@@ -92,3 +101,14 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
         context.update(
         )
         return context
+
+    def get_community_arm(self, subject_identifier):
+        onschedule_model_cls = django_apps.get_model(
+            'potlako_subject.onschedule')
+        try:
+            onschedule_obj = onschedule_model_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except onschedule_model_cls.DoesNotExist:
+            return None
+        else:
+            return onschedule_obj.community_arm

@@ -17,15 +17,12 @@
 	    {{ result.subject_identifier }}
 		</td>
 	    <td>
-	    	{% dashboard_button result %}
-	    	{%  if result.community_arm == 'Intervention' %}
-				{% baseline_clinical_summary_button result groups%}
-				{% navigation_plan_summary_button result  groups%}
-      		{% endif %}
+			{% baseline_clinical_summary_button result groups%}
+			{% dashboard_button result %}
 	    </td>
 	<!--  end columns  -->
 
-    </tr>                     
+    </tr>
 
 {% endfor %}
 
