@@ -13,7 +13,6 @@ from edc_dashboard.view_mixins import (
 from edc_dashboard.views import ListboardView
 from edc_navbar import NavbarViewMixin
 
-
 from ..model_wrappers import WorkListModelWrapper
 from ..models import WorkList
 from .filters import ListboardViewFilters
@@ -44,13 +43,13 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         patient_fu_cls = django_apps.get_model('potlako_subject.patientcallfollowup')
 
         patient_fu_obj = patient_fu_cls.objects.filter(
-                                     subject_visit__subject_identifier=subject_identifier).order_by('-created')
+            subject_visit__subject_identifier=subject_identifier).order_by('-created')
         if patient_fu_obj:
             return patient_fu_obj[0].next_appointment_date
         else:
             try:
                 patient_call_obj = patient_initial_cls.objects.get(
-                                            subject_visit__subject_identifier=subject_identifier)
+                    subject_visit__subject_identifier=subject_identifier)
             except patient_initial_cls.DoesNotExist:
                 pass
             else:
@@ -60,16 +59,21 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     @property
     def create_worklist(self):
         subject_consent_cls = django_apps.get_model('potlako_subject.subjectconsent')
-        subject_identifiers = subject_consent_cls.objects.values_list('subject_identifier', flat=True).all()
+        subject_identifiers = subject_consent_cls.objects.values_list(
+            'subject_identifier', flat=True).all()
         subject_identifiers = list(set(subject_identifiers))
         for subject_identifier in subject_identifiers:
             if self.specilist_appointment_date(subject_identifier=subject_identifier):
-                if self.specilist_appointment_date(subject_identifier=subject_identifier) < get_utcnow().date():
+                if self.specilist_appointment_date(
+                        subject_identifier=subject_identifier) <= get_utcnow().date():
                     try:
                         WorkList.objects.get(subject_identifier=subject_identifier)
                     except WorkList.DoesNotExist:
                         WorkList.objects.create(
                             subject_identifier=subject_identifier)
+                else:
+                    WorkList.objects.filter(
+                            subject_identifier=subject_identifier).delete()
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_follow_listboard_url')
