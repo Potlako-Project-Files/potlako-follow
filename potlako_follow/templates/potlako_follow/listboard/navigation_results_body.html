@@ -1,0 +1,29 @@
+{% load admin_urls %}
+{% load edc_base_extras %}
+{% load potlako_dashboard_extras %}
+<!-- begin results body -->
+
+{% for result in results %}
+    <tr> 
+   
+    <!--  begin columns  -->
+    	<td>{{ forloop.counter }}</td>
+		<td>
+	    {% if result.gender == MALE %}
+	        <i class="fa fa-male fa-lg"></i>
+	    {% else %}
+	        <i class="fa fa-female fa-lg"></i>
+	    {% endif %}
+	    {{ result.subject_identifier }}
+		</td>
+	    <td>
+			{% baseline_clinical_summary_button result groups%}
+			{% dashboard_button result %}
+	    </td>
+	<!--  end columns  -->
+
+    </tr>
+
+{% endfor %}
+
+<!-- begin results body -->

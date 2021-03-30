@@ -1,0 +1,42 @@
+{% load edc_base_extras %}
+{% load potlako_dashboard_extras %}
+<!-- begin results body -->
+
+{% for result in results %}
+    <tr> 
+   
+    <!--  begin columns  -->
+    	<td>{{ forloop.counter }}</td>
+		<td>
+	    {% if result.gender == MALE %}
+	        <i class="fa fa-male fa-lg"></i>
+	    {% else %}
+	        <i class="fa fa-female fa-lg"></i>
+	    {% endif %}
+	    {{ result.subject_identifier }}
+		</td>
+	    <td>
+			{% include 'potlako_follow/listboard/results_body/add_call_log_entry.html' %}
+	    	{% if result.patient_reached == 'Yes' %}
+	    	{% dashboard_button result %}
+	    	{% endif %}
+	    </td>
+	    <td> {{ result.cancer_propability_suspicion.0 }}</td>
+	    <td> {{ result.cancer_propability_suspicion.1}}</td>
+	    <td>{{ result.specilist_appointment_date }}</td>
+	    <td>{% if result.call_datetime %} {{ result.call_datetime }} {% endif %}</td>
+	    <td>
+		    {% if result.is_called %}
+		      <span class="text text-success"><i class="fa fa-check-circle fa-lg" title="Called"></i></span>
+		    {% else %}
+		      <span class="text text-danger"><i class="fa fa-times-circle fa-lg" title="Not called"></i></span>
+		    {% endif %}
+	    </td> 
+	    <td>{{ result.contacts }}</td>  
+	<!--  end columns  -->
+
+    </tr>
+
+{% endfor %}
+
+<!-- begin results body -->
