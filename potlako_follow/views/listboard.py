@@ -63,17 +63,28 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
             'subject_identifier', flat=True).all()
         subject_identifiers = list(set(subject_identifiers))
         for subject_identifier in subject_identifiers:
-            if self.specilist_appointment_date(subject_identifier=subject_identifier):
-                if self.specilist_appointment_date(
-                        subject_identifier=subject_identifier) <= get_utcnow().date():
+            appt_date = self.specilist_appointment_date(subject_identifier=subject_identifier)
+            if (self.get_community_arm(subject_identifier) == 'Intervention'
+                    and (appt_date and appt_date <= get_utcnow().date())):
                     try:
                         WorkList.objects.get(subject_identifier=subject_identifier)
                     except WorkList.DoesNotExist:
                         WorkList.objects.create(
                             subject_identifier=subject_identifier)
-                else:
-                    WorkList.objects.filter(
-                            subject_identifier=subject_identifier).delete()
+            else:
+                WorkList.objects.filter(
+                        subject_identifier=subject_identifier).delete()
+
+    def get_community_arm(self, subject_identifier):
+        onschedule_model_cls = django_apps.get_model(
+            'potlako_subject.onschedule')
+        try:
+            onschedule_obj = onschedule_model_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except onschedule_model_cls.DoesNotExist:
+            return None
+        else:
+            return onschedule_obj.community_arm
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_follow_listboard_url')
