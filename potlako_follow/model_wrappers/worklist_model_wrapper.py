@@ -147,8 +147,8 @@ class WorkListModelWrapper(ModelWrapper):
         """
         try:
             log_obj = LogEntry.objects.get(
-            call_datetime__date=get_utcnow().date(),
-            log__call__subject_identifier=self.subject_consent.subject_identifier,)
+                call_datetime__date=get_utcnow().date(),
+                log__call__subject_identifier=self.subject_consent.subject_identifier,)
         except LogEntry.DoesNotExist:
             return None
         else:
@@ -197,4 +197,8 @@ class WorkListModelWrapper(ModelWrapper):
     @property
     def survey_schedule(self):
         return None
+
+    @property
+    def gender(self):
+        return subject_consent.gender
 

@@ -38,7 +38,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -102,7 +101,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'potlako_follow.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -112,7 +110,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -132,10 +129,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 DASHBOARD_URL_NAMES = {
     'potlako_follow_listboard_url': 'potlako_follow:potlako_follow_listboard_url',
     'potlako_navigation_listboard_url': 'potlako_follow:potlako_navigation_listboard_url',
+    'potlako_investigation_listboard_url': 'potlako_follow:potlako_investigation_listboard_url',
 
 }
 
@@ -143,9 +140,8 @@ DASHBOARD_BASE_TEMPLATES = {
     'listboard_base_template': 'potlako/base.html',
     'dashboard_base_template': 'potlako/base.html',
     'potlako_follow_listboard_template': 'potlako_follow/follow_listboard.html',
-    'potlako_follow_listboard_template': 'potlako_follow/navigation_listboard.html',
+    'potlako_investigation_listboard_template': 'potlako_follow/investigation_fu_listboard.html',
     }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -159,7 +155,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

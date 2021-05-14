@@ -1,11 +1,4 @@
-from django.apps import apps as django_apps
 from django.contrib import admin
-from django.conf import settings
-from django.urls.base import reverse
-from django.urls.exceptions import NoReverseMatch
-
-from edc_model_admin.model_admin_next_url_redirect_mixin import ModelAdminNextUrlRedirectError
-from edc_constants.constants import NOT_APPLICABLE
 from django_revision.modeladmin_mixin import ModelAdminRevisionMixin
 from edc_base.sites.admin import ModelAdminSiteMixin
 from edc_model_admin import (
@@ -18,8 +11,8 @@ from edc_call_manager.admin import ModelAdminCallMixin
 from potlako_subject.models.model_mixins import BaselineRoadMapMixin
 
 from .admin_site import potlako_follow_admin
-from .forms import LogEntryForm, NavigationWorkListForm, WorkListForm
-from .models import Call, Log, LogEntry, WorkList, NavigationWorkList
+from .forms import LogEntryForm, NavigationWorkListForm, WorkListForm, InvestigationFUWorkListForm
+from .models import Call, Log, LogEntry, WorkList, NavigationWorkList, InvestigationFUWorkList
 
 
 class ModelAdminMixin(ModelAdminNextUrlRedirectMixin,
@@ -139,6 +132,24 @@ class WorkListAdmin(ModelAdminMixin, admin.ModelAdmin):
 class NavigationWorkListAdmin(ModelAdminMixin, admin.ModelAdmin):
 
     form = NavigationWorkListForm
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                'subject_identifier',
+                'report_datetime',
+                'is_called',
+                'called_datetime',
+                'visited',)}),
+        audit_fieldset_tuple)
+
+    instructions = ['Complete this form once per day.']
+
+
+@admin.register(InvestigationFUWorkList, site=potlako_follow_admin)
+class InvestigationFUWorkListAdmin(ModelAdminMixin, admin.ModelAdmin):
+
+    form = InvestigationFUWorkListForm
 
     fieldsets = (
         (None, {

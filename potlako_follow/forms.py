@@ -11,7 +11,7 @@ from edc_constants.constants import YES, CLOSED, NO
 from edc_form_validators import FormValidator
 from edc_form_validators import FormValidatorMixin
 
-from .models import LogEntry, NavigationWorkList, WorkList
+from .models import LogEntry, NavigationWorkList, WorkList, InvestigationFUWorkList
 
 
 class LogEntryFormValidator(FormValidator):
@@ -40,6 +40,7 @@ class LogEntryFormValidator(FormValidator):
             self._errors.update(message)
             raise ValidationError(message)
 
+
 class LogEntryForm(FormValidatorMixin, forms.ModelForm):
 
     form_validator_cls = LogEntryFormValidator
@@ -65,6 +66,13 @@ class NavigationWorkListForm(SiteModelFormMixin, forms.ModelForm):
 
     class Meta:
         model = NavigationWorkList
+        fields = '__all__'
+
+
+class InvestigationFUWorkListForm(SiteModelFormMixin, forms.ModelForm):
+
+    class Meta:
+        model = InvestigationFUWorkList
         fields = '__all__'
 
 
@@ -125,6 +133,7 @@ class AssignParticipantForm(forms.Form):
         if extra_choices:
             assignable_users_choices += extra_choices
         return assignable_users_choices
+
 
 class ResetAssignmentForm(forms.Form):
 
