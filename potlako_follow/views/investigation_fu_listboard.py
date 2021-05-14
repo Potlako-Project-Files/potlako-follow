@@ -41,8 +41,10 @@ class InvestigationFUListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
     @property
     def create_worklist(self):
-        investigation_ordered_cls = django_apps.get_model('potlako_subject.investigationsordered')
-        investigation_resulted_cls = django_apps.get_model('potlako_subject.investigationsresulted')
+        investigation_ordered_cls = django_apps.get_model(
+            'potlako_subject.investigationsordered')
+        investigation_resulted_cls = django_apps.get_model(
+            'potlako_subject.investigationsresulted')
 
         resulted_subject_identifiers = investigation_resulted_cls.objects.values_list(
             'subject_visit__subject_identifier', flat=True).filter(
