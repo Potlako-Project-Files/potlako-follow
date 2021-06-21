@@ -70,7 +70,7 @@ class InvestigationWorkListModelWrapper(ModelWrapper):
             return (suspected_cancer, baseline_obj.cancer_probability)
 
     @property
-    def date_biopsy_ordered(self):
+    def latest_investigation_ordered(self):
         investigation_ordered_cls = django_apps.get_model(
             'potlako_subject.investigationsordered')
 
@@ -79,4 +79,4 @@ class InvestigationWorkListModelWrapper(ModelWrapper):
             tests_ordered_type__name='pathology')
 
         if investigations_ordered:
-            return investigations_ordered.latest('created').ordered_date
+            return investigations_ordered.latest('created')

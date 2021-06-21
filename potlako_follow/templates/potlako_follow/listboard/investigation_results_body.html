@@ -9,7 +9,7 @@
     <!--  begin columns  -->
     	<td>{{ forloop.counter }}</td>
 		<td>
-	    {% if result.gender == MALE %}
+	    {% if result.gender == 'M' %}
 	        <i class="fa fa-male fa-lg"></i>
 	    {% else %}
 	        <i class="fa fa-female fa-lg"></i>
@@ -19,7 +19,13 @@
 		<td> {{ result.cancer_propability_suspicion.0 }}</td>
 	    <td> {{ result.cancer_propability_suspicion.1}}</td>
 	    <td>
-			{{ result.date_biopsy_ordered}}
+			{{ result.latest_investigation_ordered.date_pathology_taken}}
+	    </td>
+	    <td>
+	        {{ result.latest_investigation_ordered.pathology_nhl_date}}
+	    </td>
+	    <td>
+	        {{ result.latest_investigation_ordered.pathology_result_date}}
 	    </td>
 	    <td>
 			{% dashboard_button result %}
