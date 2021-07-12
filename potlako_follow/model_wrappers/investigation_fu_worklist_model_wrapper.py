@@ -80,3 +80,15 @@ class InvestigationWorkListModelWrapper(ModelWrapper):
 
         if investigations_ordered:
             return investigations_ordered.latest('created')
+
+    @property
+    def latest_investigation_resulted(self):
+        investigation_resulted_cls = django_apps.get_model(
+            'potlako_subject.investigationsresulted')
+
+        investigations_resulted = investigation_resulted_cls.objects.filter(
+            subject_visit__subject_identifier=self.subject_identifier,
+            tests_resulted_type__name='pathology')
+
+        if investigations_resulted:
+            return investigations_resulted.latest('created')
