@@ -18,6 +18,7 @@ from ..model_wrappers import InvestigationWorkListModelWrapper
 from ..models import InvestigationFUWorkList
 from .filters import ListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
+from edc_constants.constants import YES
 
 
 class InvestigationFUListboardView(NavbarViewMixin, EdcBaseViewMixin,
@@ -48,7 +49,8 @@ class InvestigationFUListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
         resulted_subject_identifiers = investigation_resulted_cls.objects.values_list(
             'subject_visit__subject_identifier', flat=True).filter(
-                tests_resulted_type__name='pathology')
+                tests_resulted_type__name='pathology',
+                results_reviewed=YES)
 
         ordered_subject_identifiers = investigation_ordered_cls.objects.values_list(
             'subject_visit__subject_identifier', flat=True).filter(
@@ -68,7 +70,8 @@ class InvestigationFUListboardView(NavbarViewMixin, EdcBaseViewMixin,
                 try:
                     InvestigationsResulted.objects.get(
                         tests_resulted_type__name='pathology',
-                        subject_visit__subject_identifier=subject_identifier)
+                        subject_visit__subject_identifier=subject_identifier,
+                        results_reviewed=YES)
                 except InvestigationsResulted.DoesNotExist:
                     try:
                         InvestigationFUWorkList.objects.get(
