@@ -27,23 +27,15 @@ class WorkListModelWrapper(ModelWrapper):
         'potlako_follow_listboard_url')
 
     @property
-    def specilist_appointment_date(self):
-        patient_initial_cls = django_apps.get_model('potlako_subject.patientcallinitial')
-        patient_fu_cls = django_apps.get_model('potlako_subject.patientcallfollowup')
+    def specialist_appointment_date(self):
+        appt_cls = django_apps.get_model('edc_appointment.appointment')
 
-        patient_fu_obj = patient_fu_cls.objects.filter(
-                                     subject_visit__subject_identifier=self.object.subject_identifier).order_by('-created')
-        if patient_fu_obj:
-            return patient_fu_obj[0].next_appointment_date
-        else:
-            try:
-                patient_call_obj = patient_initial_cls.objects.get(
-                                            subject_visit__subject_identifier=self.object.subject_identifier)
-            except patient_initial_cls.DoesNotExist:
-                pass
-            else:
-                return patient_call_obj.next_appointment_date
-        return None
+        appt_obj = appt_cls.objects.filter(
+            appt_datetime__lte=get_utcnow().date(),
+            appt_status='New',
+            subject_identifier=self.object.subject_identifier).latest('-appt_datetime')
+
+        return appt_obj.appt_datetime if appt_obj else None
 
     @property
     def cancer_propability_suspicion(self):
