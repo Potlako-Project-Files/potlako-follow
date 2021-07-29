@@ -4,12 +4,12 @@ from django.conf import settings
 from potlako_dashboard.model_wrappers import (
     BaselineClinicalSummaryModelWrapperMixin, NavigationPlanSummaryModelWrapperMixin)
 from edc_model_wrapper import ModelWrapper
+from django.core.exceptions import MultipleObjectsReturned
 
 
-
-class NavigationWorkListModelWrapper(
-        BaselineClinicalSummaryModelWrapperMixin, NavigationPlanSummaryModelWrapperMixin,
-         ModelWrapper):
+class NavigationWorkListModelWrapper(BaselineClinicalSummaryModelWrapperMixin,
+                                     NavigationPlanSummaryModelWrapperMixin,
+                                     ModelWrapper):
 
     model = 'potlako_follow.navigationworklist'
     querystring_attrs = ['subject_identifier']
@@ -28,3 +28,20 @@ class NavigationWorkListModelWrapper(
             return None
         else:
             return onschedule_obj.community_arm
+
+    @property
+    def gender(self):
+        consent_model_cls = django_apps.get_model(
+            'potlako_subject.subjectconsent')
+        if self.subject_identifier:
+            try:
+                subject_consent_obj = consent_model_cls.object.get(
+                    subject_identifier=self.subject_identifier)
+            except subject_consent_obj.DoesNotExist:
+                raise
+            except MultipleObjectsReturned:
+                return consent_model_cls.object.filter(
+                    subject_identifier=self.subject_identifier)[0].gender
+            else:
+                return subject_consent_obj.gender
+        return None

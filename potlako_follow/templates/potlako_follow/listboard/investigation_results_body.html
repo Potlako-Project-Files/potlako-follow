@@ -16,8 +16,21 @@
 	    {% endif %}
 	    {{ result.subject_identifier }}
 		</td>
+		<td> {{ result.cancer_propability_suspicion.0 }}</td>
+	    <td> {{ result.cancer_propability_suspicion.1}}</td>
 	    <td>
-			{% baseline_clinical_summary_button result groups%}
+			{{ result.latest_investigation_ordered.pathology_specimen_date}}
+	    </td>
+	    <td>
+	        {{ result.latest_investigation_ordered.pathology_nhl_date}}
+	    </td>
+	    <td>
+	        {{ result.latest_investigation_resulted.pathology_result_date}}
+	    </td>
+	    <td>
+	        {{ result.latest_investigation_resulted.pathology_communicated_date}}
+	    </td>
+	    <td>
 			{% dashboard_button result %}
 	    </td>
 	<!--  end columns  -->

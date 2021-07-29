@@ -1,6 +1,7 @@
 {% extends "edc_dashboard/listboard.html" %}
 {% load admin_urls %}
 {% load edc_base_extras %}
+{% load edc_dashboard_extras %}
 
 {% load tz %}
 {% load static %}
@@ -75,6 +76,7 @@
                     <!-- begin spacer rows -->
                     <table>
                     <tr><td>&nbsp;</td></tr>
+                    {% paginator_row %}
                     <tr><td>&nbsp;</td></tr>
                     <tr><td>&nbsp;</td></tr>
                     <tr><td>&nbsp;</td></tr>
@@ -86,6 +88,5 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+
 {% endblock main %}

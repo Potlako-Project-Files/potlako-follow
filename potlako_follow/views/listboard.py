@@ -33,28 +33,10 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     listboard_view_filters = ListboardViewFilters()
     model_wrapper_cls = WorkListModelWrapper
     navbar_name = 'potlako_follow'
-    navbar_selected_item = 'appointmet_worklist'
+    navbar_selected_item = 'appointment_worklist'
     ordering = '-modified'
     paginate_by = 10
     search_form_url = 'potlako_follow_listboard_url'
-
-    def specilist_appointment_date(self, subject_identifier=None):
-        patient_initial_cls = django_apps.get_model('potlako_subject.patientcallinitial')
-        patient_fu_cls = django_apps.get_model('potlako_subject.patientcallfollowup')
-
-        patient_fu_obj = patient_fu_cls.objects.filter(
-            subject_visit__subject_identifier=subject_identifier).order_by('-created')
-        if patient_fu_obj:
-            return patient_fu_obj[0].next_appointment_date
-        else:
-            try:
-                patient_call_obj = patient_initial_cls.objects.get(
-                    subject_visit__subject_identifier=subject_identifier)
-            except patient_initial_cls.DoesNotExist:
-                pass
-            else:
-                return patient_call_obj.next_appointment_date
-        return None
 
     @property
     def create_worklist(self):
@@ -62,18 +44,38 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         subject_identifiers = subject_consent_cls.objects.values_list(
             'subject_identifier', flat=True).all()
         subject_identifiers = list(set(subject_identifiers))
-        for subject_identifier in subject_identifiers:
-            if self.specilist_appointment_date(subject_identifier=subject_identifier):
-                if self.specilist_appointment_date(
-                        subject_identifier=subject_identifier) <= get_utcnow().date():
-                    try:
-                        WorkList.objects.get(subject_identifier=subject_identifier)
-                    except WorkList.DoesNotExist:
-                        WorkList.objects.create(
-                            subject_identifier=subject_identifier)
-                else:
-                    WorkList.objects.filter(
-                            subject_identifier=subject_identifier).delete()
+
+        appt_cls = django_apps.get_model('edc_appointment.appointment')
+
+        overdue_appts_obj = appt_cls.objects.filter(appt_datetime__lte=get_utcnow().date(),
+                                                    appt_status='New')
+
+        overdue_appts_ids = overdue_appts_obj.values_list('subject_identifier', flat=True)
+
+        WorkList.objects.all().exclude(subject_identifier__in=overdue_appts_ids).delete()
+
+        for appt in overdue_appts_obj:
+            if (self.get_community_arm(appt.subject_identifier) == 'Intervention'
+                    or appt.visit_code_sequence == 0):
+                try:
+                    WorkList.objects.get(subject_identifier=appt.subject_identifier)
+                except WorkList.DoesNotExist:
+                    WorkList.objects.create(
+                        subject_identifier=appt.subject_identifier)
+            else:
+                WorkList.objects.filter(
+                        subject_identifier=appt.subject_identifier).delete()
+
+    def get_community_arm(self, subject_identifier):
+        onschedule_model_cls = django_apps.get_model(
+            'potlako_subject.onschedule')
+        try:
+            onschedule_obj = onschedule_model_cls.objects.get(
+                subject_identifier=subject_identifier)
+        except onschedule_model_cls.DoesNotExist:
+            return None
+        else:
+            return onschedule_obj.community_arm
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_follow_listboard_url')
