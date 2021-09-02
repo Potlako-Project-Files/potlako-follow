@@ -55,7 +55,7 @@ class WorkListModelMixin(SiteModelMixin, SearchSlugModelMixin, BaseUuidModel):
         return (self.subject_identifier,)
 
     def get_search_slug_fields(self):
-        fields = ['subject_identifier']
+        fields = ['subject_identifier', ]
         return fields
 
     class Meta:
