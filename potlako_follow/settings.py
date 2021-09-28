@@ -10,9 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-import sys
-
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,6 +59,8 @@ INSTALLED_APPS = [
     'edc_identifier.apps.AppConfig',
     'edc_registration.apps.AppConfig',
     'edc_call_manager.apps.AppConfig',
+    'edc_sync.apps.AppConfig',
+    'edc_sync_files.apps.AppConfig',
     'potlako_follow.apps.EdcAppointmentAppConfig',
     'potlako_follow.apps.EdcProtocolAppConfig',
     'potlako_follow.apps.EdcTimepointAppConfig',
