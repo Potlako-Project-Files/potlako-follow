@@ -17,6 +17,8 @@
 {% if cliniciancallenrollment %}
 <div class="summary">
 <div class="tab">
+  <button class="tablinks"  onmouseover="openCity(event, 'contacts')" >Contacts</button>
+  
   <button class="tablinks"  onmouseover="openCity(event, 'cliniciancallenrollment')" >Demographics</button>
   
 {% if navigationsummaryandplan %}
@@ -24,6 +26,11 @@
  {% endif %}
 </div>
 
+<div id="contacts" class="tabcontent">
+<div class='patient_details'>
+   <label class='heading'> Contacts: </label> {{patient_contacts}}
+</div>
+</div>
 
 <div id="cliniciancallenrollment" class="tabcontent">
 <div class='patient_details'>

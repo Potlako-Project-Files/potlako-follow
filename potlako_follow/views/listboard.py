@@ -35,7 +35,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     navbar_name = 'potlako_follow'
     navbar_selected_item = 'appointment_worklist'
     ordering = '-modified'
-    paginate_by = 10
+    paginate_by = 50
     search_form_url = 'potlako_follow_listboard_url'
 
     @property
