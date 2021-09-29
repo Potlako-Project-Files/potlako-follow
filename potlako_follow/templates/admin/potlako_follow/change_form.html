@@ -28,7 +28,29 @@
 
 <div id="contacts" class="tabcontent">
 <div class='patient_details'>
-   <label class='heading'> Contacts: </label> {{patient_contacts}}
+	{% if locator_obj.subject_cell %}
+   <div style="white-space: nowrap;">
+   <label class='heading' > Subject Contacts: </label>  {{locator_obj.subject_cell}}
+                {% if locator_obj.subject_cell_alt %}, {{locator_obj.subject_cell_alt}} {%endif%}
+                {% if locator_obj.subject_phone %}, {{locator_obj.subject_phone}}  {%endif%}
+                {% if locator_obj.subject_phone_alt %}, {{locator_obj.subject_phone_alt}} {%endif%} 
+   </div>
+   {% endif %}
+   
+   {% if locator_obj.indirect_contact_cell %}
+   <div style="white-space: nowrap;">
+   <label class='heading'> Indirect Contacts: </label> {{locator_obj.indirect_contact_cell}}
+        {% if locator_obj.indirect_contact_cell_alt %}, {{locator_obj.indirect_contact_cell_alt}} {%endif%}
+          {% if locator_obj.indirect_contact_phone %}, {{locator_obj.indirect_contact_phone}} {%endif%}
+   </div>
+   {% endif %}
+   {% if locator_obj.alt_contact_cell %}
+   <div style="white-space: nowrap;">
+   <label class='heading'> Other Alt Contacts: </label> {{locator_obj.alt_contact_cell}}
+          {% if locator_obj.other_alt_contact_cell %}, {{locator_obj.other_alt_contact_cell}} {%endif%}
+                 {% if locator_obj.alt_contact_tel %}, {{locator_obj.alt_contact_tel}} {%endif%}
+   </div>
+   {% endif %}
 </div>
 </div>
 
