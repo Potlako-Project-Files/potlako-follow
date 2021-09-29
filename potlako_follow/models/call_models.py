@@ -3,10 +3,11 @@ from edc_base.model_mixins import BaseUuidModel
 from edc_base.model_validators import datetime_not_future
 from edc_base.sites.site_model_mixin import SiteModelMixin
 from edc_base.utils import get_utcnow
+from edc_constants.choices import YES_NO
+
 from edc_call_manager.managers import LogEntryManager
 from edc_call_manager.model_mixins import (
     CallModelMixin, LogModelMixin, LogEntryModelMixin)
-from edc_constants.choices import YES_NO
 
 from ..choices import CALL_OUTCOME
 
@@ -14,6 +15,7 @@ from ..choices import CALL_OUTCOME
 class Call(CallModelMixin, SiteModelMixin, BaseUuidModel):
 
     class Meta(CallModelMixin.Meta):
+        unique_together = ('subject_identifier', 'label', 'scheduled', 'call_datetime')
         app_label = 'potlako_follow'
 
 
