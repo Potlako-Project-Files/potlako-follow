@@ -6,12 +6,12 @@ from django.db.models import Q
 from django.urls.base import reverse
 from django.utils.decorators import method_decorator
 from edc_base.utils import get_utcnow
-
 from edc_base.view_mixins import EdcBaseViewMixin
+from edc_navbar import NavbarViewMixin
+
 from edc_dashboard.view_mixins import (
     ListboardFilterViewMixin, SearchFormViewMixin)
 from edc_dashboard.views import ListboardView
-from edc_navbar import NavbarViewMixin
 
 from ..model_wrappers import WorkListModelWrapper
 from ..models import WorkList
@@ -39,6 +39,12 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     search_form_url = 'potlako_follow_listboard_url'
 
     @property
+    def subject_consent(self):
+        return django_apps.get_model(
+            'potlako_subject.subjectconsent').objects.filter(
+            subject_identifier=self.object.subject_identifier).last()
+
+    @property
     def create_worklist(self):
         subject_consent_cls = django_apps.get_model('potlako_subject.subjectconsent')
         subject_identifiers = subject_consent_cls.objects.values_list(
@@ -55,13 +61,19 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         WorkList.objects.all().exclude(subject_identifier__in=overdue_appts_ids).delete()
 
         for appt in overdue_appts_obj:
-            if (self.get_community_arm(appt.subject_identifier) == 'Intervention'
-                    or appt.visit_code_sequence == 0):
-                try:
-                    WorkList.objects.get(subject_identifier=appt.subject_identifier)
-                except WorkList.DoesNotExist:
-                    WorkList.objects.create(
-                        subject_identifier=appt.subject_identifier)
+
+            if appt.visit_code_sequence == 0:
+                latest_consent = django_apps.get_model(
+                    'potlako_subject.subjectconsent').objects.filter(
+                        subject_identifier=appt.subject_identifier).last()
+
+                if latest_consent:
+                    try:
+                        WorkList.objects.get(subject_identifier=appt.subject_identifier)
+                    except WorkList.DoesNotExist:
+                        WorkList.objects.create(
+                            subject_identifier=appt.subject_identifier,
+                            user_created=latest_consent.user_created)
             else:
                 WorkList.objects.filter(
                         subject_identifier=appt.subject_identifier).delete()
@@ -93,8 +105,8 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
     def extra_search_options(self, search_term):
         q = Q()
-        if re.match('^[A-Z]+$', search_term):
-            q = Q(first_name__exact=search_term)
+        if re.match('^[a-z]+$', search_term):
+            q = Q(user_created__icontains=search_term)
         return q
 
     def get_context_data(self, **kwargs):
