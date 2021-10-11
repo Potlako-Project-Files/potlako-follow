@@ -39,32 +39,24 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     search_form_url = 'potlako_follow_listboard_url'
 
     @property
-    def subject_consent(self):
-        return django_apps.get_model(
-            'potlako_subject.subjectconsent').objects.filter(
-            subject_identifier=self.object.subject_identifier).last()
-
-    @property
     def create_worklist(self):
         subject_consent_cls = django_apps.get_model('potlako_subject.subjectconsent')
-        subject_identifiers = subject_consent_cls.objects.values_list(
-            'subject_identifier', flat=True).all()
-        subject_identifiers = list(set(subject_identifiers))
 
         appt_cls = django_apps.get_model('edc_appointment.appointment')
 
         overdue_appts_obj = appt_cls.objects.filter(appt_datetime__lte=get_utcnow().date(),
                                                     appt_status='New')
 
-        overdue_appts_ids = overdue_appts_obj.values_list('subject_identifier', flat=True)
+        overdue_appts_ids = list(set(overdue_appts_obj.values_list(
+            'subject_identifier', flat=True)))
 
-        WorkList.objects.all().exclude(subject_identifier__in=overdue_appts_ids).delete()
+        old_worklist = WorkList.objects.all().exclude(subject_identifier__in=overdue_appts_ids)
+        old_worklist.delete()
 
         for appt in overdue_appts_obj:
 
             if appt.visit_code_sequence == 0:
-                latest_consent = django_apps.get_model(
-                    'potlako_subject.subjectconsent').objects.filter(
+                latest_consent = subject_consent_cls.objects.filter(
                         subject_identifier=appt.subject_identifier).last()
 
                 if latest_consent:
