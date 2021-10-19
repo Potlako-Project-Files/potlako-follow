@@ -1,25 +1,25 @@
 from django.db import models
-
 from edc_base.model_mixins import BaseUuidModel
-
-from edc_base.model_fields import OtherCharField
-from edc_base.model_validators import date_is_future, datetime_not_future
+from edc_base.model_validators import datetime_not_future
+from edc_base.sites.site_model_mixin import SiteModelMixin
 from edc_base.utils import get_utcnow
 from edc_constants.choices import YES_NO
-from edc_constants.constants import YES, NOT_APPLICABLE
 
+from edc_call_manager.managers import LogEntryManager
 from edc_call_manager.model_mixins import (
     CallModelMixin, LogModelMixin, LogEntryModelMixin)
+
 from ..choices import CALL_OUTCOME
 
 
-class Call(CallModelMixin, BaseUuidModel):
+class Call(CallModelMixin, SiteModelMixin, BaseUuidModel):
 
     class Meta(CallModelMixin.Meta):
+        unique_together = ('subject_identifier', 'label', 'scheduled', 'call_datetime')
         app_label = 'potlako_follow'
 
 
-class Log(LogModelMixin, BaseUuidModel):
+class Log(LogModelMixin, SiteModelMixin, BaseUuidModel):
 
     call = models.ForeignKey(Call, on_delete=models.PROTECT)
 
@@ -27,7 +27,7 @@ class Log(LogModelMixin, BaseUuidModel):
         app_label = 'potlako_follow'
 
 
-class LogEntry(BaseUuidModel):
+class LogEntry(SiteModelMixin, BaseUuidModel):
 
     log = models.ForeignKey(Log, on_delete=models.PROTECT)
 
@@ -52,9 +52,14 @@ class LogEntry(BaseUuidModel):
         null=True,
         blank=True)
 
+    objects = LogEntryManager()
+
     @property
     def outcome(self):
         return self.call_outcome
+
+    def natural_key(self):
+        return (self.call_datetime,) + self.log.natural_key()
 
     class Meta(LogEntryModelMixin.Meta):
         app_label = 'potlako_follow'

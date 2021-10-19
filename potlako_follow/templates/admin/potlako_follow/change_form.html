@@ -17,6 +17,8 @@
 {% if cliniciancallenrollment %}
 <div class="summary">
 <div class="tab">
+  <button class="tablinks"  onmouseover="openCity(event, 'contacts')" >Contacts</button>
+  
   <button class="tablinks"  onmouseover="openCity(event, 'cliniciancallenrollment')" >Demographics</button>
   
 {% if navigationsummaryandplan %}
@@ -24,6 +26,33 @@
  {% endif %}
 </div>
 
+<div id="contacts" class="tabcontent">
+<div class='patient_details'>
+	{% if locator_obj.subject_cell %}
+   <div style="white-space: nowrap;">
+   <label class='heading' > Subject Contacts: </label>  {{locator_obj.subject_cell}}
+                {% if locator_obj.subject_cell_alt %}, {{locator_obj.subject_cell_alt}} {%endif%}
+                {% if locator_obj.subject_phone %}, {{locator_obj.subject_phone}}  {%endif%}
+                {% if locator_obj.subject_phone_alt %}, {{locator_obj.subject_phone_alt}} {%endif%} 
+   </div>
+   {% endif %}
+   
+   {% if locator_obj.indirect_contact_cell %}
+   <div style="white-space: nowrap;">
+   <label class='heading'> Indirect Contacts: </label> {{locator_obj.indirect_contact_cell}}
+        {% if locator_obj.indirect_contact_cell_alt %}, {{locator_obj.indirect_contact_cell_alt}} {%endif%}
+          {% if locator_obj.indirect_contact_phone %}, {{locator_obj.indirect_contact_phone}} {%endif%}
+   </div>
+   {% endif %}
+   {% if locator_obj.alt_contact_cell %}
+   <div style="white-space: nowrap;">
+   <label class='heading'> Other Alt Contacts: </label> {{locator_obj.alt_contact_cell}}
+          {% if locator_obj.other_alt_contact_cell %}, {{locator_obj.other_alt_contact_cell}} {%endif%}
+                 {% if locator_obj.alt_contact_tel %}, {{locator_obj.alt_contact_tel}} {%endif%}
+   </div>
+   {% endif %}
+</div>
+</div>
 
 <div id="cliniciancallenrollment" class="tabcontent">
 <div class='patient_details'>

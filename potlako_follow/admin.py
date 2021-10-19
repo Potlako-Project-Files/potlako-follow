@@ -1,3 +1,6 @@
+from potlako_subject.models import SubjectLocator
+from potlako_subject.models.model_mixins import BaselineRoadMapMixin
+
 from django.contrib import admin
 from django_revision.modeladmin_mixin import ModelAdminRevisionMixin
 from edc_base.sites.admin import ModelAdminSiteMixin
@@ -7,8 +10,8 @@ from edc_model_admin import (
     ModelAdminReadOnlyMixin, ModelAdminInstitutionMixin,
     ModelAdminRedirectOnDeleteMixin)
 from edc_model_admin import audit_fieldset_tuple
+
 from edc_call_manager.admin import ModelAdminCallMixin
-from potlako_subject.models.model_mixins import BaselineRoadMapMixin
 
 from .admin_site import potlako_follow_admin
 from .forms import LogEntryForm, NavigationWorkListForm, WorkListForm, InvestigationFUWorkListForm
@@ -27,14 +30,29 @@ class ModelAdminMixin(ModelAdminNextUrlRedirectMixin,
     date_hierarchy = 'modified'
     empty_value_display = '-'
 
+    def get_locator_obj(self, request):
+
+        try:
+            locator_obj = SubjectLocator.objects.get(subject_identifier=request.GET.get(
+                    'subject_identifier'))
+        except SubjectLocator.DoesNotExist:
+            pass
+        else:
+            return locator_obj
+
     def add_view(self, request, form_url='', extra_context=None):
 
         extra_context = extra_context or {}
+
+        locator_obj = self.get_locator_obj(request)
+
         if self.extra_context_models:
             extra_context_dict = BaselineRoadMapMixin(
                 subject_identifier=request.GET.get(
                     'subject_identifier')).baseline_dict
             [extra_context.update({key: extra_context_dict.get(key)})for key in self.extra_context_models]
+        if locator_obj:
+            extra_context.update({'locator_obj': locator_obj})
         return super().add_view(
             request, form_url=form_url, extra_context=extra_context)
 
