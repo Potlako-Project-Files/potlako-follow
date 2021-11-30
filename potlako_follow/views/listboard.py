@@ -44,7 +44,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
         appt_cls = django_apps.get_model('edc_appointment.appointment')
 
-        overdue_appts_obj = appt_cls.objects.filter(appt_datetime__gte=get_utcnow().date(),
+        overdue_appts_obj = appt_cls.objects.filter(appt_datetime__lte=get_utcnow().date(),
                                                     appt_status='new')
 
         overdue_appts_ids = list(set(overdue_appts_obj.values_list(
