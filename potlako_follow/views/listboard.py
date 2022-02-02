@@ -55,20 +55,16 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
         for appt in overdue_appts_obj:
 
-            if appt.visit_code_sequence == 0:
-                latest_consent = subject_consent_cls.objects.filter(
-                        subject_identifier=appt.subject_identifier).last()
+            latest_consent = subject_consent_cls.objects.filter(
+                    subject_identifier=appt.subject_identifier).last()
 
-                if latest_consent:
-                    try:
-                        WorkList.objects.get(subject_identifier=appt.subject_identifier)
-                    except WorkList.DoesNotExist:
-                        WorkList.objects.create(
-                            subject_identifier=appt.subject_identifier,
-                            user_created=latest_consent.user_created)
-            else:
-                WorkList.objects.filter(
-                        subject_identifier=appt.subject_identifier).delete()
+            if latest_consent:
+                try:
+                    WorkList.objects.get(subject_identifier=appt.subject_identifier)
+                except WorkList.DoesNotExist:
+                    WorkList.objects.create(
+                        subject_identifier=appt.subject_identifier,
+                        user_created=latest_consent.user_created)
 
     def get_community_arm(self, subject_identifier):
         onschedule_model_cls = django_apps.get_model(
