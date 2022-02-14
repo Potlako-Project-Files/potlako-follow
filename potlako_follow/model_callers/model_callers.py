@@ -1,9 +1,10 @@
+from potlako_subject.models import SubjectLocator
+
 from django.core.exceptions import ValidationError
-from edc_call_manager.model_caller import ModelCaller, DAILY, OPEN_CALL
-from edc_call_manager.decorators import register
 from edc_constants.constants import CLOSED, YES, NO
 
-from potlako_subject.models import SubjectLocator
+from edc_call_manager.decorators import register
+from edc_call_manager.model_caller import ModelCaller, DAILY, OPEN_CALL
 
 from ..models import Call, Log, LogEntry
 from ..models import NavigationWorkList, WorkList
@@ -71,7 +72,8 @@ class NavigationWorkListFollowUpModelCaller(ModelCaller):
             if call.call_status == CLOSED:
                 raise ValidationError(
                     'Call is closed. Perhaps catch this in the form.')
-            call.call_outcome = '. '.join(log_entry.outcome)
+            if log_entry.outcome:
+                call.call_outcome = '. '.join(log_entry.outcome)
             call.call_datetime = log_entry.call_datetime
             call.call_attempts = log_entries.count()
             if log_entry.patient_reached == YES:
