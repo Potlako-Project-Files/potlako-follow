@@ -18,3 +18,18 @@ class ListboardViewFilters(ListboardViewFilters):
         label='Visited',
         position=11,
         lookup={'visited': True})
+
+    high = ListboardFilter(
+        label='High',
+        position=12,
+        lookup={'cancer_probability': 'high'})
+
+    moderate = ListboardFilter(
+        label='Moderate',
+        position=12,
+        lookup={'cancer_probability': 'Moderate'})
+
+    low = ListboardFilter(
+        label='Low',
+        position=12,
+        lookup={'cancer_probability': 'Low'})
