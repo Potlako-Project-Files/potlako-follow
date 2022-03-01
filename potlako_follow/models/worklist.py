@@ -1,6 +1,7 @@
 import imp
 from django.db import models
 from edc_search.model_mixins import SearchSlugManager
+from urllib3 import Retry
 from .worklist_model_mixin import WorkListModelMixin, BaseWorkManager
 from django.apps import apps as django_apps
 from queryable_properties.properties import queryable_property
@@ -9,6 +10,12 @@ from potlako_subject.models import BaselineClinicalSummary
 from django.db.models import Subquery, QuerySet, OuterRef, Count
 
 class WorklistManager(BaseWorkManager, SearchSlugManager):
+
+    baseline_clinical_summary_model = 'potlako_subject.baselineclinicalsummary'
+
+    def baseline_clinical_summary_cls(self):
+        return django_apps.get_model(self.baseline_clinical_summary_model)
+
     def get_queryset(self):
 
         """
@@ -16,7 +23,7 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
         so one can use filter on a calcuated property or attribute
         """
 
-        base_clinical_summary = BaselineClinicalSummary.objects.filter(
+        base_clinical_summary = self.baseline_clinical_summary_cls.objects.filter(
                 subject_identifier=OuterRef('subject_identifier'))
 
         return super().get_queryset().annotate(
