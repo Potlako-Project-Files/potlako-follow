@@ -13,6 +13,7 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
 
     baseline_clinical_summary_model = 'potlako_subject.baselineclinicalsummary'
 
+    @property
     def baseline_clinical_summary_cls(self):
         return django_apps.get_model(self.baseline_clinical_summary_model)
 
