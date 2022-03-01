@@ -11,6 +11,11 @@ from django.db.models import Subquery, QuerySet, OuterRef, Count
 class WorklistManager(BaseWorkManager, SearchSlugManager):
     def get_queryset(self):
 
+        """
+        Overriding the queryset in order to include a calculated value
+        so one can use filter on a calcuated property or attribute
+        """
+
         base_clinical_summary = BaselineClinicalSummary.objects.filter(
                 subject_identifier=OuterRef('subject_identifier'))
 
