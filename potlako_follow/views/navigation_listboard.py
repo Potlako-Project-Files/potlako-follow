@@ -1,7 +1,5 @@
-import imp
 from potlako_subject.models import BaselineClinicalSummary, NavigationSummaryAndPlan
 import re
-from edc_dashboard.listboard_filter import ListboardFilter
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -18,7 +16,6 @@ from edc_dashboard.views import ListboardView
 from ..model_wrappers import NavigationWorkListModelWrapper
 from ..models import NavigationWorkList
 from .filters import NavigationListboardViewFilters
-from potlako_subject.models import ClinicianCallEnrollment
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
