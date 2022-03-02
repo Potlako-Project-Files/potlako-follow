@@ -5,6 +5,7 @@ from potlako_dashboard.model_wrappers import (
     BaselineClinicalSummaryModelWrapperMixin, NavigationPlanSummaryModelWrapperMixin)
 from edc_model_wrapper import ModelWrapper
 from django.core.exceptions import MultipleObjectsReturned
+from potlako_subject.models import SubjectScreening, SubjectConsent, ClinicianCallEnrollment
 
 
 class NavigationWorkListModelWrapper(BaselineClinicalSummaryModelWrapperMixin,
@@ -45,3 +46,16 @@ class NavigationWorkListModelWrapper(BaselineClinicalSummaryModelWrapperMixin,
             else:
                 return subject_consent_obj.gender
         return None
+
+    @property
+    def village_town(self):
+        if self.subject_identifier:
+            try:
+                subject_consent_obj = SubjectConsent.objects.get(
+                    subject_identifier=self.subject_identifier)
+            except subject_consent_obj.DoesNotExist:
+                raise
+            else:
+                screening_identifier = subject_consent_obj.screening_identifier
+                clinical_call = ClinicianCallEnrollment.objects.get(screening_identifier=screening_identifier)
+                return clinical_call.village_town.title()
