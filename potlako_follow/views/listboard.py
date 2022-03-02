@@ -1,6 +1,4 @@
 import re
-from turtle import pd
-
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -41,7 +39,8 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
 
     @property
     def create_worklist(self):
-        subject_consent_cls = django_apps.get_model('potlako_subject.subjectconsent')
+        subject_consent_cls = django_apps.get_model(
+            'potlako_subject.subjectconsent')
 
         appt_cls = django_apps.get_model('edc_appointment.appointment')
 
@@ -51,17 +50,19 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         overdue_appts_ids = list(set(overdue_appts_obj.values_list(
             'subject_identifier', flat=True)))
 
-        old_worklist = WorkList.objects.all().exclude(subject_identifier__in=overdue_appts_ids)
+        old_worklist = WorkList.objects.all().exclude(
+            subject_identifier__in=overdue_appts_ids)
         old_worklist.delete()
 
         for appt in overdue_appts_obj:
 
             latest_consent = subject_consent_cls.objects.filter(
-                    subject_identifier=appt.subject_identifier).last()
+                subject_identifier=appt.subject_identifier).last()
 
             if latest_consent:
                 try:
-                    WorkList.objects.get(subject_identifier=appt.subject_identifier)
+                    WorkList.objects.get(
+                        subject_identifier=appt.subject_identifier)
                 except WorkList.DoesNotExist:
                     WorkList.objects.create(
                         subject_identifier=appt.subject_identifier,
@@ -95,7 +96,8 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
     def extra_search_options(self, search_term):
         q = Q()
         if re.match('^[a-z]+$', search_term):
-            q = Q(user_created__icontains=search_term) | Q(cancer_probability = search_term)
+            q = Q(user_created__icontains=search_term) | Q(
+                cancer_probability=search_term)
         return q
 
     def get_context_data(self, **kwargs):
