@@ -9,17 +9,21 @@
     <!--  begin columns  -->
     	<td>{{ forloop.counter }}</td>
 		<td>
-	    {% if result.gender == 'M' %}
-	        <i class="fa fa-male fa-lg"></i>
-	    {% else %}
-	        <i class="fa fa-female fa-lg"></i>
-	    {% endif %}
-	    {{ result.subject_identifier }}
+			{% if result.gender == 'M' %}
+				<i class="fa fa-male fa-lg"></i>
+			{% else %}
+				<i class="fa fa-female fa-lg"></i>
+			{% endif %}
+			{{ result.subject_identifier }}
+			
+	    </td>
+		<td>
+			{{ result.village_town }}
 		</td>
-	    <td>
+		<td>
 			{% baseline_clinical_summary_button result groups%}
 			{% dashboard_button result %}
-	    </td>
+		</td>
 	<!--  end columns  -->
 
     </tr>
