@@ -1,4 +1,5 @@
 import re
+from turtle import pd
 
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
@@ -19,7 +20,7 @@ from .filters import ListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
-class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
+class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     WorkListQuerysetViewMixin,
                     ListboardView):
@@ -70,8 +71,8 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         onschedule_model_cls = django_apps.get_model(
             'potlako_subject.onschedule')
         try:
-            onschedule_obj = onschedule_model_cls.objects.get(
-                subject_identifier=subject_identifier)
+            onschedule_obj = onschedule_model_cls.objects.filter(
+                subject_identifier=subject_identifier).last()
         except onschedule_model_cls.DoesNotExist:
             return None
         else:
