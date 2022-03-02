@@ -1,6 +1,6 @@
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
 from edc_model_wrapper import ModelWrapper
 
 
@@ -19,7 +19,7 @@ class InvestigationWorkListModelWrapper(ModelWrapper):
         try:
             onschedule_obj = onschedule_model_cls.objects.get(
                 subject_identifier=self.subject_identifier)
-        except ObjectDoesNotExist:
+        except onschedule_model_cls.DoesNotExist:
             return None
         else:
             return onschedule_obj.community_arm
