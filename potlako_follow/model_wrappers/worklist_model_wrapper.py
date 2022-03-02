@@ -156,8 +156,7 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def subject_consent(self):
-        return django_apps.get_model(
-            'potlako_subject.subjectconsent').objects.filter(
+        return self.subject_consentobjects.filter(
             subject_identifier=self.object.subject_identifier).last()
 
     @property
@@ -192,5 +191,5 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def gender(self):
-        return subject_consent.gender
+        return self.subject_consent.gender
 
