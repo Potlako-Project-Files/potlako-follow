@@ -94,7 +94,7 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     def extra_search_options(self, search_term):
         q = Q()
         if re.match('^[a-z]+$', search_term):
-            q = Q(user_created__icontains=search_term)
+            q = Q(user_created__icontains=search_term) | Q(cancer_probability = search_term)
         return q
 
     def get_context_data(self, **kwargs):

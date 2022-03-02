@@ -1,6 +1,5 @@
 from potlako_subject.models import BaselineClinicalSummary, NavigationSummaryAndPlan
 import re
-
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -16,7 +15,7 @@ from edc_dashboard.views import ListboardView
 
 from ..model_wrappers import NavigationWorkListModelWrapper
 from ..models import NavigationWorkList
-from .filters import ListboardViewFilters
+from .filters import NavigationListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
@@ -31,7 +30,7 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
     listboard_fa_icon = "fa-user-plus"
 
     model = 'potlako_follow.navigationworklist'
-    listboard_view_filters = ListboardViewFilters()
+    listboard_view_filters = NavigationListboardViewFilters()
     model_wrapper_cls = NavigationWorkListModelWrapper
     navbar_name = 'potlako_follow'
     navbar_selected_item = 'navigation_worklist'
@@ -90,8 +89,8 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
     def extra_search_options(self, search_term):
         q = Q()
-        if re.match('^[A-Z]+$', search_term):
-            q = Q(first_name__exact=search_term)
+        if re.match('^[a-zA-Z]+$', search_term):
+            q = Q(village_town__icontains=search_term)
         return q
 
     def get_context_data(self, **kwargs):
