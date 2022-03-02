@@ -26,6 +26,13 @@ class WorkListModelWrapper(ModelWrapper):
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'potlako_follow_listboard_url')
 
+    subject_consent_model = 'potlako_subject.subjectconsent'
+
+    @property
+    def subject_consent_cls(self):
+        return django_apps.get_model(self.subject_consent_model)
+
+
     @property
     def specialist_appointment_date(self):
         appt_cls = django_apps.get_model('edc_appointment.appointment')
@@ -156,7 +163,7 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def subject_consent(self):
-        return self.subject_consentobjects.filter(
+        return self.subject_consent_cls.objects.filter(
             subject_identifier=self.object.subject_identifier).last()
 
     @property
