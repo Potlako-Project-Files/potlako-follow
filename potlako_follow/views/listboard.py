@@ -61,8 +61,8 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
 
             if latest_consent:
                 try:
-                    WorkList.objects.get(
-                        subject_identifier=appt.subject_identifier)
+                    WorkList.objects.filter(
+                        subject_identifier=appt.subject_identifier).last()
                 except WorkList.DoesNotExist:
                     WorkList.objects.create(
                         subject_identifier=appt.subject_identifier,
