@@ -101,7 +101,7 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         return q
 
     def get_queryset(self):
-        return super().get_queryset().order_by('-specialist_appointment_date./ma')
+        return super().get_queryset().order_by('-specialist_appointment_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
