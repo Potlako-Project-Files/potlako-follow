@@ -133,3 +133,4 @@ dmypy.json
 
 potlako_follow/migrations/*
 **/migrations/**
+.vscode/
