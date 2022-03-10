@@ -8,6 +8,8 @@ from queryable_properties.properties import queryable_property
 from queryable_properties.managers import QueryablePropertiesManager
 from potlako_subject.models import BaselineClinicalSummary
 from django.db.models import Subquery, QuerySet, OuterRef, Count
+from edc_base.utils import get_utcnow
+
 
 class WorklistManager(BaseWorkManager, SearchSlugManager):
 
@@ -17,6 +19,10 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
     def baseline_clinical_summary_cls(self):
         return django_apps.get_model(self.baseline_clinical_summary_model)
 
+    @property
+    def appointment_cls(self):
+        return django_apps.get_model('edc_appointment.appointment')
+
     def get_queryset(self):
 
         """
@@ -25,13 +31,22 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
         """
 
         base_clinical_summary = self.baseline_clinical_summary_cls.objects.filter(
-                subject_identifier=OuterRef('subject_identifier'))
+            subject_identifier=OuterRef('subject_identifier'))
+
+        appointment_obj = self.appointment_cls.objects.filter(
+            appt_datetime__lte=get_utcnow().date(),
+            appt_status='New',
+            subject_identifier=OuterRef('subject_identifier'))
 
         return super().get_queryset().annotate(
             cancer_probability=Subquery(
                 base_clinical_summary.values('cancer_probability')[:1]
+            ),
+            specialist_appointment_date=Subquery(
+                appointment_obj.values('appt_datetime')[:1]
             )
         )
+
 
 
 class WorkList(WorkListModelMixin):

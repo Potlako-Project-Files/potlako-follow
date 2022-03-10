@@ -47,8 +47,8 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         overdue_appts_obj = appt_cls.objects.filter(appt_datetime__lte=get_utcnow().date(),
                                                     appt_status='new')
 
-        overdue_appts_ids = list(set(overdue_appts_obj.values_list(
-            'subject_identifier', flat=True)))
+        overdue_appts_ids = overdue_appts_obj.values_list(
+            'subject_identifier', flat=True).distinct()
 
         old_worklist = WorkList.objects.all().exclude(
             subject_identifier__in=overdue_appts_ids)
@@ -99,6 +99,9 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
             q = Q(user_created__icontains=search_term) | Q(
                 cancer_probability=search_term)
         return q
+
+    def get_queryset(self):
+        return super().get_queryset().order_by('-specialist_appointment_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
