@@ -1,5 +1,6 @@
-import imp
+
 from django.db import models
+from django.db.models import *
 from edc_search.model_mixins import SearchSlugManager
 from urllib3 import Retry
 from .worklist_model_mixin import WorkListModelMixin, BaseWorkManager
@@ -24,7 +25,6 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
         return django_apps.get_model('edc_appointment.appointment')
 
     def get_queryset(self):
-
         """
         Overriding the queryset in order to include a calculated value
         so one can use filter on a calcuated property or attribute
@@ -38,15 +38,29 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
             appt_status='New',
             subject_identifier=OuterRef('subject_identifier'))
 
+        '''
+        cancer_probability_rank in order to sort values
+        '''
+
+        cancer_probability_rank = Case(
+            When(cancer_probability__isnull=True, then=0),
+            When(cancer_probability='low', then=Value(1)),
+            When(cancer_probability='moderate', then=Value(2)),
+            When(cancer_probability='high', then=Value(3)),
+            default=Value(-1),
+            output_field=CharField()
+        )
+
         return super().get_queryset().annotate(
             cancer_probability=Subquery(
                 base_clinical_summary.values('cancer_probability')[:1]
             ),
             specialist_appointment_date=Subquery(
                 appointment_obj.values('appt_datetime')[:1]
-            )
-        )
+            ),
+            cancer_probability_rank=cancer_probability_rank
 
+        )
 
 
 class WorkList(WorkListModelMixin):
