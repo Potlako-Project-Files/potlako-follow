@@ -33,7 +33,7 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
     model_wrapper_cls = WorkListModelWrapper
     navbar_name = 'potlako_follow'
     navbar_selected_item = 'appointment_worklist'
-    ordering = '-modified'
+    ordering = '-cancer_probability_rank'
     paginate_by = 50
     search_form_url = 'potlako_follow_listboard_url'
 
@@ -101,7 +101,8 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         return q
 
     def get_queryset(self):
-        return super().get_queryset().order_by('-specialist_appointment_date')
+        return super().get_queryset().order_by(
+            '-specialist_appointment_date').order_by('-cancer_probability_rank')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
