@@ -15,6 +15,11 @@ from edc_base.utils import get_utcnow
 class WorklistManager(BaseWorkManager, SearchSlugManager):
 
     baseline_clinical_summary_model = 'potlako_subject.baselineclinicalsummary'
+    log_entry_model = 'potlako_follow.logentry'
+
+    @property
+    def log_entry_cls(self):
+        return django_apps.get_model(self.log_entry_model)
 
     @property
     def baseline_clinical_summary_cls(self):
@@ -43,7 +48,7 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
         '''
 
         cancer_probability_rank = Case(
-            When(cancer_probability__isnull=True, then=0),
+            When(cancer_probability__isnull=True, then=Value(0)),
             When(cancer_probability='low', then=Value(1)),
             When(cancer_probability='moderate', then=Value(2)),
             When(cancer_probability='high', then=Value(3)),
@@ -58,7 +63,7 @@ class WorklistManager(BaseWorkManager, SearchSlugManager):
             specialist_appointment_date=Subquery(
                 appointment_obj.values('appt_datetime')[:1]
             ),
-            cancer_probability_rank=cancer_probability_rank
+            cancer_probability_rank=cancer_probability_rank,
 
         )
 
