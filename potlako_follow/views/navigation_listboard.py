@@ -1,23 +1,21 @@
+from potlako_subject.models import BaselineClinicalSummary, NavigationSummaryAndPlan
 import re
-
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls.base import reverse
 from django.utils.decorators import method_decorator
-
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_constants.constants import NO
+from edc_constants.constants import YES
+from edc_navbar import NavbarViewMixin
+
 from edc_dashboard.view_mixins import (
     ListboardFilterViewMixin, SearchFormViewMixin)
 from edc_dashboard.views import ListboardView
-from edc_navbar import NavbarViewMixin
-
-from potlako_subject.models import BaselineClinicalSummary, NavigationSummaryAndPlan
 
 from ..model_wrappers import NavigationWorkListModelWrapper
 from ..models import NavigationWorkList
-from .filters import ListboardViewFilters
+from .filters import NavigationListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
@@ -32,7 +30,7 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
     listboard_fa_icon = "fa-user-plus"
 
     model = 'potlako_follow.navigationworklist'
-    listboard_view_filters = ListboardViewFilters()
+    listboard_view_filters = NavigationListboardViewFilters()
     model_wrapper_cls = NavigationWorkListModelWrapper
     navbar_name = 'potlako_follow'
     navbar_selected_item = 'navigation_worklist'
@@ -49,14 +47,8 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
         for subject_identifier in subject_identifiers:
             try:
                 BaselineClinicalSummary.objects.get(subject_identifier=subject_identifier,
-                                                    team_discussion=NO)
+                                                    team_discussion=YES)
             except BaselineClinicalSummary.DoesNotExist:
-                try:
-                    NavigationWorkList.objects.get(subject_identifier=subject_identifier)
-                except NavigationWorkList.DoesNotExist:
-                    NavigationWorkList.objects.create(
-                        subject_identifier=subject_identifier)
-            else:
                 if self.get_community_arm(subject_identifier) == 'Intervention':
                     try:
                         NavigationSummaryAndPlan.objects.get(
@@ -74,6 +66,12 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
                 else:
                     NavigationWorkList.objects.filter(
                             subject_identifier=subject_identifier).delete()
+            else:
+                try:
+                    NavigationWorkList.objects.get(subject_identifier=subject_identifier)
+                except NavigationWorkList.DoesNotExist:
+                    NavigationWorkList.objects.create(
+                        subject_identifier=subject_identifier)
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_navigation_listboard_url')
@@ -91,8 +89,8 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
 
     def extra_search_options(self, search_term):
         q = Q()
-        if re.match('^[A-Z]+$', search_term):
-            q = Q(first_name__exact=search_term)
+        if re.match('^[a-zA-Z]+$', search_term):
+            q = Q(village_town__icontains=search_term)
         return q
 
     def get_context_data(self, **kwargs):

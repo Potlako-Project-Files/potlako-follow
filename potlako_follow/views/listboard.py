@@ -1,5 +1,4 @@
 import re
-
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -19,7 +18,7 @@ from .filters import ListboardViewFilters
 from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 
 
-class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
+class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     WorkListQuerysetViewMixin,
                     ListboardView):
@@ -34,33 +33,36 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     model_wrapper_cls = WorkListModelWrapper
     navbar_name = 'potlako_follow'
     navbar_selected_item = 'appointment_worklist'
-    ordering = '-modified'
+    ordering = '-cancer_probability_rank'
     paginate_by = 50
     search_form_url = 'potlako_follow_listboard_url'
 
     @property
     def create_worklist(self):
-        subject_consent_cls = django_apps.get_model('potlako_subject.subjectconsent')
+        subject_consent_cls = django_apps.get_model(
+            'potlako_subject.subjectconsent')
 
         appt_cls = django_apps.get_model('edc_appointment.appointment')
 
         overdue_appts_obj = appt_cls.objects.filter(appt_datetime__lte=get_utcnow().date(),
                                                     appt_status='new')
 
-        overdue_appts_ids = list(set(overdue_appts_obj.values_list(
-            'subject_identifier', flat=True)))
+        overdue_appts_ids = overdue_appts_obj.values_list(
+            'subject_identifier', flat=True).distinct()
 
-        old_worklist = WorkList.objects.all().exclude(subject_identifier__in=overdue_appts_ids)
+        old_worklist = WorkList.objects.all().exclude(
+            subject_identifier__in=overdue_appts_ids)
         old_worklist.delete()
 
         for appt in overdue_appts_obj:
 
             latest_consent = subject_consent_cls.objects.filter(
-                    subject_identifier=appt.subject_identifier).last()
+                subject_identifier=appt.subject_identifier).last()
 
             if latest_consent:
                 try:
-                    WorkList.objects.get(subject_identifier=appt.subject_identifier)
+                    WorkList.objects.filter(
+                        subject_identifier=appt.subject_identifier).last()
                 except WorkList.DoesNotExist:
                     WorkList.objects.create(
                         subject_identifier=appt.subject_identifier,
@@ -70,8 +72,8 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
         onschedule_model_cls = django_apps.get_model(
             'potlako_subject.onschedule')
         try:
-            onschedule_obj = onschedule_model_cls.objects.get(
-                subject_identifier=subject_identifier)
+            onschedule_obj = onschedule_model_cls.objects.filter(
+                subject_identifier=subject_identifier).last()
         except onschedule_model_cls.DoesNotExist:
             return None
         else:
@@ -94,8 +96,13 @@ class ListboardView(NavbarViewMixin, EdcBaseViewMixin,
     def extra_search_options(self, search_term):
         q = Q()
         if re.match('^[a-z]+$', search_term):
-            q = Q(user_created__icontains=search_term)
+            q = Q(user_created__icontains=search_term) | Q(
+                cancer_probability=search_term)
         return q
+
+    def get_queryset(self):
+        return super().get_queryset().order_by(
+            '-specialist_appointment_date').order_by('-cancer_probability_rank')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

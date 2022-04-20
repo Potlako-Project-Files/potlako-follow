@@ -17,6 +17,17 @@ class NavigationWorkListModelWrapper(BaselineClinicalSummaryModelWrapperMixin,
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'potlako_navigation_listboard_url')
 
+    subject_consent_model = 'potlako_subject.subjectconsent'
+    clinician_call_enrollment_model = 'potlako_subject.cliniciancallenrollment'
+
+    @property
+    def subject_consent_cls(self):
+        return django_apps.get_model(self.subject_consent_model)
+
+    @property
+    def clinician_call_enrollment_cls(self):
+        return django_apps.get_model(self.clinician_call_enrollment_model)
+
     @property
     def community_arm(self):
         onschedule_model_cls = django_apps.get_model(
@@ -24,7 +35,7 @@ class NavigationWorkListModelWrapper(BaselineClinicalSummaryModelWrapperMixin,
         try:
             onschedule_obj = onschedule_model_cls.objects.get(
                 subject_identifier=self.subject_identifier)
-        except ObjectDoesNotExist:
+        except onschedule_model_cls.DoesNotExist:
             return None
         else:
             return onschedule_obj.community_arm
@@ -45,3 +56,17 @@ class NavigationWorkListModelWrapper(BaselineClinicalSummaryModelWrapperMixin,
             else:
                 return subject_consent_obj.gender
         return None
+
+    @property
+    def village_town(self):
+        if self.subject_identifier:
+            try:
+                subject_consent_obj = self.subject_consent_cls.objects.get(
+                    subject_identifier=self.subject_identifier)
+            except subject_consent_obj.DoesNotExist:
+                raise
+            else:
+                screening_identifier = subject_consent_obj.screening_identifier
+                clinical_call = self.clinician_call_enrollment_cls.objects.get(
+                    screening_identifier=screening_identifier)
+                return clinical_call.village_town.title()

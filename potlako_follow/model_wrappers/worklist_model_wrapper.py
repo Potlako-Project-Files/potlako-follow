@@ -11,7 +11,8 @@ class LogEntryModelWrapper(ModelWrapper):
     model = 'potlako_follow.logentry'
     querystring_attrs = ['log']
     next_url_attrs = ['log', 'subject_identifier']
-    next_url_name = settings.DASHBOARD_URL_NAMES.get('potlako_follow_listboard_url')
+    next_url_name = settings.DASHBOARD_URL_NAMES.get(
+        'potlako_follow_listboard_url')
 
     @property
     def log(self):
@@ -26,6 +27,12 @@ class WorkListModelWrapper(ModelWrapper):
     next_url_name = settings.DASHBOARD_URL_NAMES.get(
         'potlako_follow_listboard_url')
 
+    subject_consent_model = 'potlako_subject.subjectconsent'
+
+    @property
+    def subject_consent_cls(self):
+        return django_apps.get_model(self.subject_consent_model)
+
     @property
     def specialist_appointment_date(self):
         appt_cls = django_apps.get_model('edc_appointment.appointment')
@@ -39,16 +46,18 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def cancer_propability_suspicion(self):
-        baseline_clinical_cls = django_apps.get_model('potlako_subject.baselineclinicalsummary')
-        clinician_enrollment_cls = django_apps.get_model('potlako_subject.cliniciancallenrollment')
+        baseline_clinical_cls = django_apps.get_model(
+            'potlako_subject.baselineclinicalsummary')
+        clinician_enrollment_cls = django_apps.get_model(
+            'potlako_subject.cliniciancallenrollment')
 
         try:
             baseline_obj = baseline_clinical_cls.objects.get(
-                                    subject_identifier=self.object.subject_identifier)
+                subject_identifier=self.object.subject_identifier)
         except baseline_clinical_cls.DoesNotExist:
             try:
                 clinician_enrollment_obj = clinician_enrollment_cls.objects.get(
-                                                    subject_identifier=self.object.subject_identifier)
+                    subject_identifier=self.object.subject_identifier)
             except clinician_enrollment_cls.DoesNotExist:
                 return None
             else:
@@ -107,6 +116,10 @@ class WorkListModelWrapper(ModelWrapper):
         return wrapped_entries
 
     @property
+    def call_attempts(self):
+        return len(self.log_entries)
+
+    @property
     def patient_reached(self):
         reached_entries = LogEntry.objects.filter(
             log__call__subject_identifier=self.object.subject_identifier,
@@ -156,8 +169,7 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def subject_consent(self):
-        return django_apps.get_model(
-            'potlako_subject.subjectconsent').objects.filter(
+        return self.subject_consent_cls.objects.filter(
             subject_identifier=self.object.subject_identifier).last()
 
     @property
@@ -177,7 +189,8 @@ class WorkListModelWrapper(ModelWrapper):
     @property
     def contacts(self):
         contacts = []
-        num_list = ['subject_cell', 'subject_cell_alt', 'subject_phone', 'subject_phone_alt']
+        num_list = ['subject_cell', 'subject_cell_alt',
+                    'subject_phone', 'subject_phone_alt']
         for contact in num_list:
             attr = getattr(self.subject_locator, contact, '')
             if attr:
@@ -192,5 +205,4 @@ class WorkListModelWrapper(ModelWrapper):
 
     @property
     def gender(self):
-        return subject_consent.gender
-
+        return self.subject_consent.gender

@@ -1,6 +1,8 @@
+from cgitb import lookup
+import imp
 from edc_dashboard.listboard_filter import ListboardFilter, ListboardViewFilters
 from django.apps import apps as django_apps
-
+from potlako_subject.models import ClinicianCallEnrollment
 
 class ListboardViewFilters(ListboardViewFilters):
 
@@ -18,3 +20,23 @@ class ListboardViewFilters(ListboardViewFilters):
         label='Visited',
         position=11,
         lookup={'visited': True})
+
+    high = ListboardFilter(
+        label='High',
+        position=12,
+        lookup={'cancer_probability': 'high'})
+
+    moderate = ListboardFilter(
+        label='Moderate',
+        position=12,
+        lookup={'cancer_probability': 'Moderate'})
+
+    low = ListboardFilter(
+        label='Low',
+        position=12,
+        lookup={'cancer_probability': 'Low'})
+
+
+class NavigationListboardViewFilters(ListboardViewFilters):
+    pass
+
