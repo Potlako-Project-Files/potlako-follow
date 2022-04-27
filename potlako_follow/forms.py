@@ -35,7 +35,7 @@ class LogEntryFormValidator(FormValidator):
         
 
         self.required_if(NO,
-                         field='patient_reached', field_required='comment')
+                         field='patient_reached', field_required='comment', inverse=False)
 
         if log.call.call_status == CLOSED:
             message = {
