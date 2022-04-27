@@ -32,6 +32,10 @@ class LogEntryFormValidator(FormValidator):
                 'This field is not required'}
             self._errors.update(message)
             raise ValidationError(message)
+        
+
+        self.required_if(NO,
+                         field='patient_reached', field_required='comment', inverse=False)
 
         if log.call.call_status == CLOSED:
             message = {
@@ -39,6 +43,7 @@ class LogEntryFormValidator(FormValidator):
                 'This call is closed. You may not add to or change the call log.'}
             self._errors.update(message)
             raise ValidationError(message)
+        
 
 
 class LogEntryForm(FormValidatorMixin, forms.ModelForm):

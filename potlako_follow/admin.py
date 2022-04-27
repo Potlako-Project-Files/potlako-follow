@@ -96,7 +96,8 @@ class LogEntryAdmin(ModelAdminMixin, admin.ModelAdmin):
                        'subject_identifier',
                        'call_datetime',
                        'patient_reached',
-                       'call_outcome',)
+                       'call_outcome',
+                       'comment',)
         }), audit_fieldset_tuple)
 
     radio_fields = {'patient_reached': admin.VERTICAL,
