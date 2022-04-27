@@ -41,4 +41,14 @@ potlako_follow.append_item(
             'potlako_navigation_listboard_url'],
         no_url_namespace=no_url_namespace))
 
+potlako_follow.append_item(
+    NavbarItem(
+        name='potlako_follow_admin',
+        title='Potlako Follow Admin',
+        label='Potlako Follow Admin',
+        fa_icon='fa-cogs',
+        url_name='potlako_follow:admin_url',
+        no_url_namespace=no_url_namespace))
+
+
 site_navbars.register(potlako_follow)

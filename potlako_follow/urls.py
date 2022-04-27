@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.views.generic.base import RedirectView
 from edc_dashboard import UrlConfig
 from .admin_site import potlako_follow_admin
 from .views import ListboardView, HomeView, NavigationListboardView
@@ -12,7 +12,8 @@ screening_identifier = '[A-Z0-9]{8}'
 
 urlpatterns = [
     path('admin/', potlako_follow_admin.urls),
-    path('', HomeView.as_view(), name='home_url'),
+    path('home', HomeView.as_view(), name='home_url'),
+    path('', RedirectView.as_view(url='admin/'), name='admin_url'),
 ]
 
 potlako_follow_listboard_url_config = UrlConfig(
