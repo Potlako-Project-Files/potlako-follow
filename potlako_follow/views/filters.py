@@ -1,9 +1,4 @@
-from cgitb import lookup
-import imp
-from turtle import pos
 from edc_dashboard.listboard_filter import ListboardFilter, ListboardViewFilters
-from django.apps import apps as django_apps
-from potlako_subject.models import ClinicianCallEnrollment
 
 class ListboardViewFilters(ListboardViewFilters):
     
