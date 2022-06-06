@@ -52,6 +52,11 @@ class LogEntry(SiteModelMixin, BaseUuidModel):
         null=True,
         blank=True)
 
+    comment = models.TextField(
+        verbose_name='Comments',
+        null=True,
+        blank=True)
+
     objects = LogEntryManager()
 
     @property

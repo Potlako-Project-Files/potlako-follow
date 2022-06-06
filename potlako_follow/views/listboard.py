@@ -1,7 +1,10 @@
 import re
+
 from django.apps import apps as django_apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls.base import reverse
 from django.utils.decorators import method_decorator
 from edc_base.utils import get_utcnow
@@ -10,7 +13,7 @@ from edc_navbar import NavbarViewMixin
 
 from edc_dashboard.view_mixins import (
     ListboardFilterViewMixin, SearchFormViewMixin)
-from edc_dashboard.views import ListboardView
+from edc_dashboard.views import ListboardView as EDCListboardView
 
 from ..model_wrappers import WorkListModelWrapper
 from ..models import WorkList
@@ -21,7 +24,7 @@ from .worklist_queryset_view_mixin import WorkListQuerysetViewMixin
 class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
                     ListboardFilterViewMixin, SearchFormViewMixin,
                     WorkListQuerysetViewMixin,
-                    ListboardView):
+                    EDCListboardView):
 
     listboard_template = 'potlako_follow_listboard_template'
     listboard_url = 'potlako_follow_listboard_url'
@@ -36,6 +39,16 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
     ordering = '-cancer_probability_rank'
     paginate_by = 50
     search_form_url = 'potlako_follow_listboard_url'
+    
+    def get(self, request, *args, **kwargs):
+        
+        query = self.request.GET.get('f', None)
+        
+        # defaults worklist to the current user
+        if not query:
+            return HttpResponseRedirect(self.request.path + "?f=current_user")
+            
+        return super().get(request, *args, **kwargs)
 
     @property
     def create_worklist(self):
@@ -101,8 +114,18 @@ class ListboardView(EdcBaseViewMixin, NavbarViewMixin,
         return q
 
     def get_queryset(self):
-        return super().get_queryset().order_by(
+        
+        queryset = super().get_queryset().order_by(
             '-specialist_appointment_date').order_by('-cancer_probability_rank')
+        
+        # get the f from filter
+        query = self.request.GET.get('f', None)
+        
+        # filter the worklist 
+        if query and 'current_user' == query:
+            queryset = queryset.filter(user_created=self.request.user.username)
+        
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
