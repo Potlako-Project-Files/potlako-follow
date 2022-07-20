@@ -5,9 +5,7 @@ class ListboardViewFilters(ListboardViewFilters):
     
     current_user = ListboardFilter(
         label='My Worklist',
-        position=1,
-        
-        lookup={'user_created': ''})
+        position=1,)
     
 
     all = ListboardFilter(
