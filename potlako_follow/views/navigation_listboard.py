@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls.base import reverse
 from django.utils.decorators import method_decorator
 from edc_base.view_mixins import EdcBaseViewMixin
-from edc_constants.constants import YES
+from edc_constants.constants import YES, NO
 from edc_navbar import NavbarViewMixin
 
 from edc_dashboard.view_mixins import (
@@ -41,37 +41,40 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
     @property
     def create_worklist(self):
         subject_visit_cls = django_apps.get_model('potlako_subject.subjectvisit')
-        subject_identifiers = subject_visit_cls.objects.values_list(
-            'subject_identifier', flat=True).filter(visit_code=1000)
-        subject_identifiers = list(set(subject_identifiers))
+        subject_identifiers = subject_visit_cls.objects.filter(visit_code=1000).values_list(
+            'subject_identifier', flat=True).distinct()
+
         for subject_identifier in subject_identifiers:
+
+            worklist_required = False
+
             try:
                 BaselineClinicalSummary.objects.get(subject_identifier=subject_identifier,
-                                                    team_discussion=YES)
+                                                    team_discussion=NO)
+
             except BaselineClinicalSummary.DoesNotExist:
+                worklist_required = True
+
+            else:
+
                 if self.get_community_arm(subject_identifier) == 'Intervention':
                     try:
                         NavigationSummaryAndPlan.objects.get(
                             subject_identifier=subject_identifier)
                     except NavigationSummaryAndPlan.DoesNotExist:
-                        try:
-                            NavigationWorkList.objects.get(
-                                subject_identifier=subject_identifier)
-                        except NavigationWorkList.DoesNotExist:
-                            NavigationWorkList.objects.create(
-                                subject_identifier=subject_identifier)
-                    else:
-                        NavigationWorkList.objects.filter(
-                            subject_identifier=subject_identifier).delete()
-                else:
-                    NavigationWorkList.objects.filter(
-                            subject_identifier=subject_identifier).delete()
-            else:
+                        worklist_required = True
+
+            if worklist_required:
+
                 try:
-                    NavigationWorkList.objects.get(subject_identifier=subject_identifier)
+                    NavigationWorkList.objects.get(
+                        subject_identifier=subject_identifier)
                 except NavigationWorkList.DoesNotExist:
                     NavigationWorkList.objects.create(
                         subject_identifier=subject_identifier)
+            else:
+                NavigationWorkList.objects.filter(
+                    subject_identifier=subject_identifier).delete()
 
     def get_success_url(self):
         return reverse('potlako_follow:potlako_navigation_listboard_url')
@@ -94,10 +97,11 @@ class NavigationListboardView(NavbarViewMixin, EdcBaseViewMixin,
         return q
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+
         self.create_worklist
-        context.update(
-        )
+
+        context = super().get_context_data(**kwargs)
+
         return context
 
     def get_community_arm(self, subject_identifier):
